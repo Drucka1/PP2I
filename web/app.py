@@ -32,17 +32,6 @@ def index():
         c = get_db().cursor()
         c.execute("SELECT * FROM recette WHERE nom LIKE '%"+str(result['nom_recette'])+"%'")
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     else:  
         c = get_db().cursor()
         c.execute("SELECT * FROM recette")
