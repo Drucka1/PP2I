@@ -13,12 +13,6 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE)
     return db
 
-@app.teardown_appcontext
-def close_connection(exception):  # pour fermer la connexion proprement
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
-
 @app.route('/')
 def hello_world():
     return index()
@@ -26,9 +20,8 @@ def hello_world():
 @app.route('/index',methods=['POST','GET'])
 def index():
     if request.method == "POST":
-        result = request.form 
         c = get_db().cursor()
-        c.execute("SELECT * FROM recette WHERE nom LIKE '%"+str(result['nom_recette'])+"%'")
+        c.execute("SELECT * FROM recette WHERE nom LIKE '%"+str(request.form ['nom_recette'])+"%'")
              
     else:  
         c = get_db().cursor()
@@ -51,7 +44,7 @@ def index():
         elt['ingredient'] = []
         
         for elt_ in list(c):
-            elt['ingredient'].append(''.join([str(ele) + ' ' for ele in elt_]))
+            elt['ingredient'].append(''.join([ str(ele) + ' ' for ele in elt_ if ele != 'u']))
         
     return render_template('index.html',recettes=recettes)
 
@@ -99,13 +92,11 @@ def login():
         else:
             return render_template("login.html")
 
-
 @app.route('/logout',methods=['POST','GET'])
 def logout():
     session.clear()
     return redirect("/index")
     
-
 @app.route('/register',methods=['POST','GET'])
 def register():
     if request.method == "POST":
