@@ -2,20 +2,22 @@
 
 Puisque c'était le chaos dans l'autre répertoire gitlab, j'en ai créé un nouveau.
 
-Suivre le guide :
-Dans un terminal, on se place dans le dossier où on veut cloner le répertoire.
+Dans un terminal, on clone le répertoire.
 
 ```sh
-$ git clone https://gitlab.telecomnancy.univ-lorraine.fr/Cedric.Lin/enactus-1a/
 $ cd enactus-1a/web
 $ python3 -m venv .venv
 ```
-
+**Exécuter la commande suivante à chaque fois que vous reprennez le projet : **
 ```sh
 $ source .venv/bin/activate
 ```
-Exécuter cette commande à chaque fois que vous reprennez le projet.
 
 ```sh
 (.venv) $ pip install -r requirements.txt
+```
+
+**Pour exécuter un fichier python, assurez vous d'utiliser celui de la venv**
+```sh
+(.venv) $ .venv/bin/python app.py
 ```
