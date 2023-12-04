@@ -19,5 +19,5 @@ $ source .venv/bin/activate
 
 **Pour exécuter un fichier python, assurez vous d'utiliser celui de la venv**
 ```sh
-(.venv) $ .venv/bin/python app.py
+(.venv) $ .venv/bin/python fichier.py
 ```
