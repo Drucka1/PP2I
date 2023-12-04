@@ -1,1 +1,3 @@
-web/.venv
+web/env
+web/__pycache__
+db.sql
