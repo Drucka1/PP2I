@@ -25,7 +25,6 @@ def hello_world():
 
 @app.route('/index',methods=['POST','GET'])
 def index():
-      
     if request.method == "POST":
         result = request.form 
         c = get_db().cursor()
@@ -66,6 +65,7 @@ def login():
         e = get_db().cursor()
         e.execute("SELECT username,id FROM utilisateurs WHERE username='"+str(un)+"' and password='"+str(pw)+"'")
         tmp = list(e)
+        
         if len(tmp) == 1: 
             session['user'] = tmp[0][0]
             session['id'] = tmp[0][1]
@@ -184,20 +184,16 @@ def choix():
         
         l = ['forname','surname','sexe','tel'] 
         
-        session['forname'] = result['forname']
-        session['surname'] = result['surname']
-        session['budget'] = result['budget']
-        session['sexe'] = result['sexe']
-        session['tel'] = result['tel']
-     
         insert,value= "",""
 
         for cle in l:
-            if session[cle] != '':
+            if result[cle] != '':
+                session[cle] = result[cle]
                 insert += cle+","
                 value += "'"+session[cle]+"',"
 
-        if session['budget'] != '':
+        if result['budget'] != '':
+            session['budget'] = result['budget']
             insert += 'budget,'
             value += session['budget']+","
 
