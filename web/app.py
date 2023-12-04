@@ -21,17 +21,16 @@ def close_connection(exception):  # pour fermer la connexion proprement
 
 @app.route('/')
 def hello_world():
-    return render_template("index.html")
+    return index()
 
 @app.route('/index',methods=['POST','GET'])
 def index():
-    
-    
+      
     if request.method == "POST":
         result = request.form 
         c = get_db().cursor()
         c.execute("SELECT * FROM recette WHERE nom LIKE '%"+str(result['nom_recette'])+"%'")
-        
+             
     else:  
         c = get_db().cursor()
         c.execute("SELECT * FROM recette")
@@ -71,7 +70,6 @@ def login():
             session['user'] = tmp[0][0]
             session['id'] = tmp[0][1]
             
-            
             c = get_db().cursor()
             d = get_db().cursor()
             c.execute("SELECT allergene_nom FROM user_allergene WHERE user_id="+str(session['id']))
@@ -92,10 +90,7 @@ def login():
 
 @app.route('/logout',methods=['POST','GET'])
 def logout():
-    session.pop('user',None)
-    session.pop('id',None)
-    session.pop('ustensile',None)
-    session.pop('allergene',None)
+    session = {}
     return redirect("/index")
     
 
@@ -180,7 +175,25 @@ def choix():
         session['sexe'] = result['sexe']
         session['tel'] = result['tel']
         
-        c = get_db().cursor()
+        l = ['forname','surname','sexe']
+        l_ = ['budget','tel']
+        
+        insert= ""
+        value=""
+
+        for cle in l:
+            if session[cle] != '':
+                insert += cle+","
+                value += "'"+session[cle]+"',"
+        for cle in l_:
+            if session[cle] != '':
+                insert += cle+","
+                value += session[cle]+","
+
+        c = get_db().cursor()  
+        
+        if value != "" : 
+            c.execute("INSERT INTO info_utilisateur (id,"+insert[:-1]+") VALUES ("+str(session['id'])+","+value[:-1]+")")
         
         u_s = []
         a_s = []
@@ -223,17 +236,41 @@ def modif_profile():
         session['sexe'] = result['sexe']
         session['tel'] = result['tel']
 
+        l = ['forname','surname','sexe']
+        l_ = ['budget','tel']
+        
+        insert= ""
+        value=""
+
+        for cle in l:
+            if session[cle] != '':
+                insert += cle+","
+                value += "'"+session[cle]+"',"
+        for cle in l_:
+            if session[cle] != '':
+                insert += cle+","
+                value += session[cle]+","
+
+        c = get_db().cursor()  
+        
+        c.execute("DELETE FROM user_allergene WHERE user_id ='"+str(session['id'])+"'")
+        get_db().commit()
+        c.execute("DELETE FROM user_ustensile WHERE user_id ='"+str(session['id'])+"'")
+        get_db().commit()
+        c.execute("DELETE FROM info_utilisateur WHERE id ='"+str(session['id'])+"'")
+        get_db().commit()
+        
+        if value != "" : 
+            c.execute("INSERT INTO info_utilisateur (id,"+insert[:-1]+") VALUES ("+str(session['id'])+","+value[:-1]+")")
+            
         u_s = []
         a_s = []
         
-        c = get_db().cursor()
-        c.execute("DELETE FROM user_allergene WHERE user_id ='"+str(session['id'])+"'")
-        get_db().commit()
-        c = get_db().cursor()
-        c.execute("DELETE FROM user_ustensile WHERE user_id ='"+str(session['id'])+"'")
-        get_db().commit()
         
-        c = get_db().cursor()
+        
+        
+        
+        
         for elt in ustensiles:
             if elt in result:
                 u_s.append(elt)
@@ -256,7 +293,4 @@ def modif_profile():
             return redirect('/index')
         else:
             return render_template("modif_choice.html",allergenes=get_allergenes(),ustensiles=get_ustensiles() )
-    
- 
-if __name__ == "__main__":
-    app.run(debug = True)
+
