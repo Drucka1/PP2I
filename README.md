@@ -8,7 +8,7 @@ Dans un terminal, on clone le répertoire.
 $ cd enactus-1a/web
 $ python3 -m venv .venv
 ```
-**Exécuter la commande suivante à chaque fois que vous reprennez le projet : **
+**Exécuter la commande suivante à chaque fois que vous reprennez le projet :**
 ```sh
 $ source .venv/bin/activate
 ```
