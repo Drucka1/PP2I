@@ -75,6 +75,18 @@ def login():
             c.execute("SELECT allergene_nom FROM user_allergene WHERE user_id="+str(session['id']))
             d.execute("SELECT ustensile_nom FROM user_ustensile WHERE user_id="+str(session['id']))
             
+            e = get_db().cursor()
+            
+            e.execute("SELECT * FROM info_utilisateur WHERE id="+str(session['id']))
+            tmp = list(e)
+
+            if len(tmp) == 1:
+                l = ['forname','surname','tel','budget','sexe']
+                
+                for elt in set(zip(l,tmp[0][1:])):
+                    if elt[1] != None:
+                        session[elt[0]] = elt[1]
+            
             session['ustensile']=[elt[0] for elt in list(d)]
             session['allergene']=[elt[0] for elt in list(c)]
         
@@ -90,7 +102,7 @@ def login():
 
 @app.route('/logout',methods=['POST','GET'])
 def logout():
-    session = {}
+    session.clear()
     return redirect("/index")
     
 
@@ -130,7 +142,7 @@ def register():
         get_db().commit()
         
         c = get_db().cursor()
-        c.execute("select id from utilisateurs where email = '"+em+"' and username = '"+un+"'")
+        c.execute("select id from utilisateurs where email ='"+em+"' and username ='"+un+"'")
         
         tmp = list(c)
         if len(tmp) == 1:
@@ -149,8 +161,6 @@ def register():
         else:
             return render_template("register.html")
     
-
-
 def get_ustensiles():
     d = get_db().cursor()
     d.execute("SELECT nom FROM ustensiles")
@@ -161,98 +171,38 @@ def get_allergenes():
     c.execute("SELECT nom FROM allergenes")
     return [elt[0] for elt in list(c)]
     
-    
-@app.route('/choix',methods=['POST','GET'])
-def choix():
-    if request.method == "POST" and 'user' in session:
-        result = request.form.to_dict()
-        ustensiles = get_ustensiles()
-        allergenes = get_allergenes()
-        
-        session['forname'] = result['forname']
-        session['surname'] = result['surname']
-        session['budget'] = result['budget']
-        session['sexe'] = result['sexe']
-        session['tel'] = result['tel']
-        
-        l = ['forname','surname','sexe']
-        l_ = ['budget','tel']
-        
-        insert= ""
-        value=""
-
-        for cle in l:
-            if session[cle] != '':
-                insert += cle+","
-                value += "'"+session[cle]+"',"
-        for cle in l_:
-            if session[cle] != '':
-                insert += cle+","
-                value += session[cle]+","
-
-        c = get_db().cursor()  
-        
-        if value != "" : 
-            c.execute("INSERT INTO info_utilisateur (id,"+insert[:-1]+") VALUES ("+str(session['id'])+","+value[:-1]+")")
-        
-        u_s = []
-        a_s = []
-        
-        for elt in ustensiles:
-            if elt in result:
-                u_s.append(elt)
-                c.execute("INSERT INTO user_ustensile (user_id,ustensile_nom) VALUES ("+str(session['id'])+",'"+elt+"')")
-
-        for elt in allergenes:
-            if elt in result:
-                a_s.append(elt)
-                c.execute("INSERT INTO user_allergene (user_id,allergene_nom) VALUES ("+str(session['id'])+",'"+elt+"')")
-        get_db().commit()
-        
-        session['ustensile']=u_s
-        session['allergene']=a_s
-        
-        
-        return redirect("/profil")
-    
-    else:
-        return render_template("user_choice.html",allergenes=get_allergenes(),ustensiles=get_ustensiles() )
-
-
 @app.route('/profil')
 def profil():
     return render_template("profil.html")
         
-@app.route('/modif',methods=['POST','GET'])
-def modif_profile():  
+@app.route('/choix',methods=['POST','GET'])
+def choix():  
     if request.method == "POST" and 'user' in session:
         result = request.form.to_dict()
         ustensiles = get_ustensiles()
         allergenes = get_allergenes()
+        
+        l = ['forname','surname','sexe','tel'] 
         
         session['forname'] = result['forname']
         session['surname'] = result['surname']
         session['budget'] = result['budget']
         session['sexe'] = result['sexe']
         session['tel'] = result['tel']
-
-        l = ['forname','surname','sexe']
-        l_ = ['budget','tel']
-        
-        insert= ""
-        value=""
+     
+        insert,value= "",""
 
         for cle in l:
             if session[cle] != '':
                 insert += cle+","
                 value += "'"+session[cle]+"',"
-        for cle in l_:
-            if session[cle] != '':
-                insert += cle+","
-                value += session[cle]+","
+
+        if session['budget'] != '':
+            insert += 'budget,'
+            value += session['budget']+","
 
         c = get_db().cursor()  
-        
+
         c.execute("DELETE FROM user_allergene WHERE user_id ='"+str(session['id'])+"'")
         get_db().commit()
         c.execute("DELETE FROM user_ustensile WHERE user_id ='"+str(session['id'])+"'")
@@ -261,15 +211,11 @@ def modif_profile():
         get_db().commit()
         
         if value != "" : 
-            c.execute("INSERT INTO info_utilisateur (id,"+insert[:-1]+") VALUES ("+str(session['id'])+","+value[:-1]+")")
-            
+            c = get_db().cursor() 
+            c.execute("INSERT INTO info_utilisateur (id,"+insert[:-1]+") VALUES ("+str(session['id'])+","+value[:-1]+")")  
+
         u_s = []
         a_s = []
-        
-        
-        
-        
-        
         
         for elt in ustensiles:
             if elt in result:
@@ -292,5 +238,5 @@ def modif_profile():
         if 'user' not in session:
             return redirect('/index')
         else:
-            return render_template("modif_choice.html",allergenes=get_allergenes(),ustensiles=get_ustensiles() )
+            return render_template("choice.html",allergenes=get_allergenes(),ustensiles=get_ustensiles() )
 
