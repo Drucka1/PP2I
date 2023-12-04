@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <form action="/modif" method="post">
+        <label>Nom</label> : <input type="text" name="surname" value="{{ session['surname']}}" required/>
+        <label>Prenom</label> : <input type="text" name="forname" value="{{ session['forname'] }}" required/>
+        <label>Sexe : </label>
+        <select name="sexe" id="sexe">
+        {% if session['sexe'] == 'Homme' %}
+            <option value="Homme">Homme</option>
+            <option value="Femme">Femme</option>
+        {% else %}
+            <option value="Femme">Femme</option>
+            <option value="Homme">Homme</option>
+        {%endif%}   
+        </select>
+        <label>Budget maximum par mois</label> : <input type="number" min="0" name="budget" value="{{ session['budget'] }}" required/>
+        <label>Numéro de téléphone</label> : <input type="tel" name="tel" value="{{ session['tel'] }}"" required/>
+
+
+        <br><br><br><div>Des allergies ?</div><br>
+        
+        {% for elt in allergenes %}
+            {% if elt in session['allergene'] %}
+                <input type="checkbox" name="{{elt}}" checked  /><label>{{elt}}</label>
+            {% else %}
+                <input type="checkbox" name="{{elt}}"/><label>{{elt}}</label>
+            {%endif%}
+        {% endfor %}
+
+        <br><br><br><div>Quelle ustensiles avez-vous?</div><br>
+        {% for elt in ustensiles %}
+            {% if elt in session['ustensile'] %}
+                <input type="checkbox" name="{{elt}}" checked /><label>{{elt}}</label>
+            {% else %}
+                <input type="checkbox" name="{{elt}}"/><label>{{elt}}</label>
+            {%endif%}
+        {% endfor %}
+        <br><br><br>
+        
+        <input type="submit" value="Envoyer" />
+    </form>
+
+
+
+
+
+</body>

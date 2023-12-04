@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <body> 
+
+        <p><strong>Bonjour
+        {% if 'user' in session %}
+            {{session['user']|title}}
+        {% endif %}</strong></p>
+        <br>
+
+        {% if 'user' in session %}
+            <a href="/logout" class="link">Deconnectez vous</a>
+            <a href="/profil" class="link">Votre profil</a>
+        {% else %}
+            <a href="/login" class="link">Connectez vous</a>
+            <a href="/register" class="link">S'inscrire</a>
+        {% endif %}
+        <br><br>
+
+      
+        {% if recettes %}
+            <center>RECETTE DU MOMENT</center>
+            <form action="/index" method="post">
+                <input type="text" name="nom_recette" /> <input type="submit" value="Rechercher" />
+            </form>
+
+            <center>{% for elt in recettes%}
+                <br><br>
+                <label>Nom</label> : {{ elt['nom'] }}
+                <br><br> Ingredients  <br><br>
+                {% for ingredient in elt['ingredient'] %}
+                    {{ ingredient }}<br>
+                {% endfor %}
+                <br>
+                <label>Like</label> : {{ elt['like'] }} <label>Dislike</label> : {{ elt['dislike'] }}<br>
+            {% endfor %}</center>
+        {% endif %}
+
+    </body>
+</html>
