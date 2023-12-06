@@ -28,6 +28,24 @@
         {% endfor %}
     {% endif%}
 
+    <br>
+
+    {% if 'favori' in session %}
+        <p><strong>Mes Recettes Favoris</strong></p>
+        {% for elt in recettes %}
+            <label>Nom</label> : {{ elt['nom'] }}
+            <br><br> Ingredients  <br><br>
+            {% for ingredient in elt['ingredient'] %}
+                {{ ingredient}}<br>
+            {% endfor %}
+            <br>
+            <label>Like</label> : {{ elt['like'] }} <label>Dislike</label> : {{ elt['dislike'] }}<br>
+        {% endfor %}
+
+    {% endif%}
+
+
+
 
 
 

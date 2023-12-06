@@ -1,11 +1,16 @@
 from flask import Flask, render_template, request, redirect, session
 from flask import g
 import sqlite3
+import hashlib
 
 app = Flask(__name__)
 
 DATABASE = 'database.db'
-app.secret_key = 'test_tmp'
+app.secret_key = '65ae6eb20bc04202aacf7d57dec0febb'
+
+#_______________________________________________FONCTION AUX_________________________________________________________
+
+
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -13,23 +18,19 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE)
     return db
 
+def hash(string):
+    hash_object = hashlib.sha256()
+    hash_object.update(string.encode())
+    return hash_object.hexdigest()
+
 @app.route('/')
 def hello_world():
     return index()
 
-@app.route('/index',methods=['POST','GET'])
-def index():
-    if request.method == "POST":
-        c = get_db().cursor()
-        c.execute("SELECT * FROM recette WHERE nom LIKE '%"+str(request.form ['nom_recette'])+"%'")
-             
-    else:  
-        c = get_db().cursor()
-        c.execute("SELECT * FROM recette")
-        
+def get_recette(cursor):  
     recettes = []
     
-    for elt in list(c):
+    for elt in list(cursor):
         dict_tmp = {}
         dict_tmp['id'] = elt[0]
         dict_tmp['nom'] = elt[1]
@@ -46,7 +47,56 @@ def index():
         for elt_ in list(c):
             elt['ingredient'].append(''.join([ str(ele) + ' ' for ele in elt_ if ele != 'u']))
         
-    return render_template('index.html',recettes=recettes)
+    return recettes
+
+def get_ustensiles():
+    d = get_db().cursor()
+    d.execute("SELECT nom FROM ustensiles")
+    return [elt[0] for elt in list(d)]
+
+def get_allergenes():
+    c = get_db().cursor()
+    c.execute("SELECT nom FROM allergenes")
+    return [elt[0] for elt in list(c)]
+
+#_______________________________________________ROUTES_________________________________________________________
+
+
+@app.route('/index',methods=['POST','GET'])
+def index():
+    c = get_db().cursor()
+    if request.method == "POST" and 'user' in session:
+        result = request.form.to_dict() 
+        if 'change_fav' in result :
+            
+            if 'fav' in result:
+                e = get_db().cursor()
+                e.execute("SELECT * FROM favori WHERE id_recette="+str(result['id_recette'])+" and id_user="+str(session['id']))
+                
+                if len(list(e)) == 0:
+                    d = get_db().cursor()
+                    d.execute("INSERT INTO favori (id_recette,id_user) VALUES ("+str(result['id_recette'])+","+str(session['id'])+")")
+                    get_db().commit()
+                    tmp = session['favori']
+                    tmp.append(int(result['id_recette']))
+                    session['favori'] = tmp
+
+            else :
+                d = get_db().cursor()
+                d.execute("DELETE FROM favori WHERE id_recette="+str(result['id_recette'])+" and id_user="+str(session['id']))
+                get_db().commit()
+                tmp = session['favori']
+                tmp.remove(int(result['id_recette']))
+                session['favori']=tmp
+                
+            c.execute("SELECT * FROM recette")
+        else :
+            c.execute("SELECT * FROM recette WHERE nom LIKE '%"+str(request.form ['nom_recette'])+"%'")
+        
+    else:  
+        c.execute("SELECT * FROM recette")
+      
+    return render_template('index.html',recettes=get_recette(c))
 
 @app.route('/login',methods=['POST','GET'])
 def login():
@@ -56,7 +106,7 @@ def login():
         pw = result['password']
         
         e = get_db().cursor()
-        e.execute("SELECT username,id FROM utilisateurs WHERE username='"+str(un)+"' and password='"+str(pw)+"'")
+        e.execute("SELECT username,id FROM utilisateurs WHERE username='"+str(un)+"' and password='"+hash(str(pw))+"'")
         tmp = list(e)
         
         if len(tmp) == 1: 
@@ -65,24 +115,26 @@ def login():
             
             c = get_db().cursor()
             d = get_db().cursor()
+            f = get_db().cursor() 
             c.execute("SELECT allergene_nom FROM user_allergene WHERE user_id="+str(session['id']))
             d.execute("SELECT ustensile_nom FROM user_ustensile WHERE user_id="+str(session['id']))
+            f.execute("SELECT id_recette FROM favori WHERE id_user="+str(session['id']))
+            
+            session['ustensile']=[elt[0] for elt in list(d)]
+            session['allergene']=[elt[0] for elt in list(c)]
+            session['favori']=[elt[0] for elt in list(f)]
+                        
             
             e = get_db().cursor()
-            
             e.execute("SELECT * FROM info_utilisateur WHERE id="+str(session['id']))
             tmp = list(e)
 
             if len(tmp) == 1:
                 l = ['forname','surname','tel','budget','sexe']
-                
                 for elt in set(zip(l,tmp[0][1:])):
                     if elt[1] != None:
                         session[elt[0]] = elt[1]
-            
-            session['ustensile']=[elt[0] for elt in list(d)]
-            session['allergene']=[elt[0] for elt in list(c)]
-        
+                   
             return redirect('/index')
         else : 
             return render_template('login.html',error='Mdp ou username incorrect')
@@ -129,7 +181,7 @@ def register():
             return render_template('register.html',error=error)
         
         c = get_db().cursor()
-        c.execute("insert into utilisateurs (username,password,email) values ('"+un+"','"+pw+"','"+em+"')")    
+        c.execute("insert into utilisateurs (username,password,email) values ('"+un+"','"+hash(pw)+"','"+em+"')")    
         get_db().commit()
         
         c = get_db().cursor()
@@ -152,19 +204,11 @@ def register():
         else:
             return render_template("register.html")
     
-def get_ustensiles():
-    d = get_db().cursor()
-    d.execute("SELECT nom FROM ustensiles")
-    return [elt[0] for elt in list(d)]
-
-def get_allergenes():
-    c = get_db().cursor()
-    c.execute("SELECT nom FROM allergenes")
-    return [elt[0] for elt in list(c)]
-    
 @app.route('/profil')
 def profil():
-    return render_template("profil.html")
+    c = get_db().cursor()
+    c.execute("SELECT * FROM recette JOIN favori ON recette.id = favori.id_recette WHERE id_user ="+str(session['id']))
+    return render_template("profil.html",recettes=get_recette(c))
         
 @app.route('/choix',methods=['POST','GET'])
 def choix():  
@@ -218,7 +262,6 @@ def choix():
         session['ustensile']=u_s
         session['allergene']=a_s
         
-        
         return redirect("/profil")
     
     else:
@@ -226,4 +269,3 @@ def choix():
             return redirect('/index')
         else:
             return render_template("choice.html",allergenes=get_allergenes(),ustensiles=get_ustensiles() )
-
