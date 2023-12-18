@@ -1,7 +1,5 @@
 # Enactus 1A
 
-Puisque c'était le chaos dans l'autre répertoire gitlab, j'en ai créé un nouveau.
-
 Dans un terminal, on clone le répertoire.
 
 ```sh
