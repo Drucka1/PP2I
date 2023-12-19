@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-</head>
-<body>
-  <header>
-    <div class="container">
-      <div class="title">
-        WhaTNeat
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="title">
+          <h1>WhaTNeat</h1>
+        </div>
       </div>
-    </div>
-  </header>
-  <h1>Register</h1>
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-  <ul>
-    {% for message in messages %}
-    <li style="color: {% if 'error' in message %}red{% else %}green{% endif %};">{{ message }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-  {% endwith %}
-  <form method="post" action="{{ url_for('register') }}">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br>
-    <input type="submit" value="Register">
-  </form>
-</body>
+    </header>
+    <main>
+      <h1>Register</h1>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+        {% for message in messages %}
+        <li style="color: {% if 'error' in message %}red{% else %}green{% endif %};">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+      <form method="post" action="{{ url_for('register') }}">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <input type="submit" value="Register">
+      </form>
+    </main>
+  </body>
 </html>

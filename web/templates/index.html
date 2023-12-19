@@ -1,23 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-</head>
-<body>
-<header>
-  <div class="container">
-    <div class="title">
-      WhaTNeat
-    </div>
-    <div class="log">
-      <a href="/login">Login</a>
-      <a href="/register">Register</a>
-    </div>
-  </div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="title">
+          <h1>WhaTNeat</h1>
+        </div>
+        <div class="log">
+          {% if user %}
+          <p>Hello, {{ user.username }} !</p>
+          {% else %}
+          <a href="{{ url_for('login')}}">Login</a>
+          <a href="{{ url_for('register')}}">Register</a>
+          {% endif %}
+        </div>
+      </div>
 
-</header>
-  <p>Hello, World !</p>
-</body>
+    </header>
+    <main>
+      <div class="container">
+        <p>Hello, World !</p>
+      </div>
+    </main>
+  </body>
 </html>

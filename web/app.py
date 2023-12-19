@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, session
 from flask_sqlalchemy import SQLAlchemy 
-import secrets
+import secrets, os
 
 secretKey = secrets.token_hex(32)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db' 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'userbase.db')
 app.config['SECRET_KEY'] = secretKey
 db = SQLAlchemy(app)
 
@@ -16,10 +16,19 @@ class User(db.Model):
 
 with app.app_context():
     db.create_all()
+    
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(os.path.join(app.root_path, 'static'), filename)
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        return render_template('index.html', user=user)
+
+    return redirect(url_for(''))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -30,7 +39,9 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and user.password == password:
-            return redirect(url_for('success'))
+            session['user_id'] = user.id
+
+            return redirect(url_for('index'))
         else:
             error = 'Invalid credentials. Please try again.'
             return render_template('login.html', error=error)
@@ -55,11 +66,6 @@ def register():
             return redirect(url_for('login'))
 
     return render_template('register.html')
-
-@app.route('/success')
-def success():
-    return 'Login successful!'
-
 
 if __name__ == "__main__":
     app.run(debug=True)
