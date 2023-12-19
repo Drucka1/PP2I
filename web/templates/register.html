@@ -15,7 +15,9 @@
       </div>
     </header>
     <main>
-      <h1>Register</h1>
+      <div class="title">
+        <h1>Register</h1>
+      </div>
       {% with messages = get_flashed_messages() %}
       {% if messages %}
       <ul>
@@ -25,13 +27,15 @@
       </ul>
       {% endif %}
       {% endwith %}
-      <form method="post" action="{{ url_for('register') }}">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-        <input type="submit" value="Register">
-      </form>
+      <div class="form">
+        <form method="post" action="{{ url_for('register') }}">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required><br>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required><br>
+          <input type="submit" value="Register">
+        </form>
+      </div>
     </main>
   </body>
 </html>

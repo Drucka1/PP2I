@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, session
 from flask_sqlalchemy import SQLAlchemy 
 import secrets, os
+from flask_bcrypt import Bcrypt
 
 secretKey = secrets.token_hex(32)
 
@@ -8,11 +9,15 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'userbase.db')
 app.config['SECRET_KEY'] = secretKey
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
 
 with app.app_context():
     db.create_all()
@@ -27,7 +32,7 @@ def index():
         user = User.query.get(session['user_id'])
         return render_template('index.html', user=user)
 
-    return redirect(url_for('index'))
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -38,7 +43,7 @@ def login():
 
         user = User.query.filter_by(username=username).first()
 
-        if user and user.password == password:
+        if user and user.check_password(password):
             session['user_id'] = user.id
 
             return redirect(url_for('index'))
@@ -59,13 +64,27 @@ def register():
         if existing_user:
             flash('Username already exists. Please choose a different one.', 'error')
         else:
-            new_user = User(username=username, password=password)
+            new_user = User(username=username, password=bcrypt.generate_password_hash(password).decode('utf-8'))
             db.session.add(new_user)
             db.session.commit()
             flash('Registration successful. You can now log in.', 'success')
             return redirect(url_for('login'))
 
     return render_template('register.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('index'))
+ 
+@app.teardown_request
+def teardown_request(exception=None):
+    db.session.remove()
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
 
 if __name__ == "__main__":
     app.run(debug=True)
