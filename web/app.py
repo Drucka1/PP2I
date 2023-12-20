@@ -3,15 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 import secrets, os
 from flask_bcrypt import Bcrypt
 
-secretKey = secrets.token_hex(32)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'userbase.db')
-app.config['SECRET_KEY'] = secretKey
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.abspath(os.path.join(os.path.dirname(__file__), 'instance', 'userbase.db'))
+db = SQLAlchemy(app) 
 
-class User(db.Model):
+secretKey = secrets.token_hex(32)
+app.config['SECRET_KEY'] = secretKey
+bcrypt = Bcrypt(app)                                # Password hashing
+
+class User(db.Model):                               # User database
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
@@ -26,6 +27,8 @@ with app.app_context():
 def serve_static(filename):
     return send_from_directory(os.path.join(app.root_path, 'static'), filename)
 
+# Home page
+
 @app.route('/')
 def index():
     if 'user_id' in session:
@@ -34,6 +37,8 @@ def index():
 
     return render_template('index.html')
 
+
+# Login screen 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -80,6 +85,9 @@ def logout():
 @app.teardown_request
 def teardown_request(exception=None):
     db.session.remove()
+
+
+# Error page
 
 @app.errorhandler(404)
 def page_not_found(e):
