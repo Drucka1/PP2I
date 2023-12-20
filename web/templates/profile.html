@@ -13,24 +13,21 @@
           <h1>WhaTNeat</h1>
         </div>
         <div class="log">
-          {% if user %}
           <div class="greet">
-            <p>Hello, <a href="{{ url_for('profile') }}">{{ user.username }}</a>!</p>
+            <p>Hello, {{ user.username }} !</p>
           </div>
           <div class="logout">
             <a href="{{ url_for('logout') }}">Log out</a>
           </div>
-          {% else %}
-          <a href="{{ url_for('login')}}">Login</a>
-          <a href="{{ url_for('register')}}">Register</a>
-          {% endif %}
         </div>
       </div>
 
     </header>
     <main>
       <div class="container">
-        <p>Hello, World !</p>
+        <h1>User Profile</h1>
+        <p>Username: {{ user.username }}</p>
+        <p>Email: {{ user.email }}</p>
       </div>
     </main>
   </body>
