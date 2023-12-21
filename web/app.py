@@ -51,10 +51,13 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        username_or_email = request.form['username_or_email']
         password = request.form['password']
 
-        user = User.query.filter_by(username=username).first()
+        if '@' in username_or_email:
+            user = User.query.filter_by(email=username_or_email).first()
+        else:
+            user = User.query.filter_by(username=username_or_email).first()
 
         if user and user.check_password(password):
             login_user(user)
@@ -71,9 +74,13 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        confirm_password = request.form['confirm_password']
         email = request.form['email']
 
         existing_user = User.query.filter_by(username=username).first()
+        if password != confirm_password:
+            flash('Passwords do not match. Please try again.', 'error')
+            return render_template('register.html')
 
         if existing_user:
             flash('Username already exists. Please choose a different one.', 'error')
