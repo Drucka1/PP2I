@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, g
+from flask import Flask, render_template, request, redirect, url_for, flash, session, g, send_from_directory
 import sqlite3
 import secrets
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
-
+import os
 from getImage import getImage
 
 app = Flask(__name__)
@@ -33,14 +33,23 @@ def init_db():
     conn = sqlite3.connect('instance/food.db')
     cursor = conn.cursor()
 
+    with app.open_resource('instance/food.sql', mode='r') as f:
+        cursor.executescript(f.read())
+
     conn.commit()
     conn.close()
 
 def get_db_connection(database: str):
-    if 'db' not in g:
-        g.db = sqlite3.connect("instance/{}.db".format(database))
-        g.db.row_factory = sqlite3.Row
-    return g.db
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(f"instance/{database}.db")
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -61,9 +70,21 @@ def serve_static(filename):
 # Home page
 @app.route('/')
 def index():
-    if current_user.is_authenticated:
-        return render_template('index.html', user=current_user)
-    return render_template('index.html')
+    user = current_user if current_user.is_authenticated else None
+    try:
+        conn = get_db_connection('food')
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT title FROM recipes')
+        recipes = cursor.fetchall()
+
+        conn.close()
+
+    except Exception as e:
+        flash('An error occurred while retrieving recipes.', 'error')
+        recipes = []
+
+    return render_template('index.html', user=user, recipes=recipes, getImage=getImage)
 
 # Login screen
 @app.route('/login', methods=['GET', 'POST'])
