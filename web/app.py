@@ -4,6 +4,8 @@ import secrets
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
 
+from getImage import getImage
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(32)
 bcrypt = Bcrypt(app)  # Password hashing
@@ -19,18 +21,24 @@ class User(UserMixin):
         return bcrypt.check_password_hash(self.password, password)
 
 def init_db():
-    conn = sqlite3.connect('instance/userbase.db')
+    conn = sqlite3.connect('instance/user.db')
     cursor = conn.cursor()
 
-    with app.open_resource('instance/schema.sql', mode='r') as f:
+    with app.open_resource('instance/user.sql', mode='r') as f:
         cursor.executescript(f.read())
 
     conn.commit()
     conn.close()
 
-def get_db_connection():
+    conn = sqlite3.connect('instance/food.db')
+    cursor = conn.cursor()
+
+    conn.commit()
+    conn.close()
+
+def get_db_connection(database: str):
     if 'db' not in g:
-        g.db = sqlite3.connect('instance/userbase.db')
+        g.db = sqlite3.connect("instance/{}.db".format(database))
         g.db.row_factory = sqlite3.Row
     return g.db
 
@@ -39,7 +47,7 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    conn = get_db_connection()
+    conn = get_db_connection('user')
     user_data = conn.execute('SELECT * FROM user WHERE id = ?', (user_id,)).fetchone()
     conn.close()
     if user_data:
@@ -64,7 +72,7 @@ def login():
         username_or_email = request.form['username_or_email']
         password = request.form['password']
 
-        conn = get_db_connection()
+        conn = get_db_connection('user')
         user_data = conn.execute(
             'SELECT * FROM user WHERE username = ? OR email = ?', (username_or_email, username_or_email)
         ).fetchone()
@@ -88,7 +96,7 @@ def register():
         confirm_password = request.form['confirm_password']
         email = request.form['email']
 
-        conn = get_db_connection()
+        conn = get_db_connection('user')
         existing_user = conn.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
 
         if password != confirm_password:
