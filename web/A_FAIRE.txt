@@ -1,0 +1,10 @@
+
+like 
+-> gerer ajout fav avec recherche
+
+
+Catalogue recette
+-> barre de recherche
+    -> like dislike 
+-> panier / ajout recette <- implementer session
+    -> somme ingredient et prix indicatif par ingredient ou recette        
