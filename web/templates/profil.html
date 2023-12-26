@@ -6,8 +6,10 @@
     <a href="/index" class="button">Menu</a>
     <a href="/choix" class="button">Modifier vos preference</a>
     <p><strong>Bonjour
-        {% if 'user' in session %}
-         {{session['user']|title}}
+        {% if 'forname' in session %}
+            {{session['forname']|title}}
+        {% elif 'user' in session %}
+            {{session['user']|title}}
         {% endif%}
     </strong></p>
     <br>

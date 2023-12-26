@@ -10,8 +10,6 @@ app.secret_key = '65ae6eb20bc04202aacf7d57dec0febb'
 
 #_______________________________________________FONCTION AUX_________________________________________________________
 
-
-
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -181,7 +179,7 @@ def register():
             return render_template('register.html',error=error)
         
         c = get_db().cursor()
-        c.execute("insert into utilisateurs (username,password,email) values ('"+un+"','"+hash(pw)+"','"+em+"')")    
+        c.execute("INSERT INTO utilisateurs (username,password,email) VALUES ('"+un+"','"+hash(pw)+"','"+em+"')")    
         get_db().commit()
         
         c = get_db().cursor()
