@@ -4,10 +4,12 @@
 <body>
     
     <a href="/index" class="button">Menu</a>
-    <a href="/modif" class="button">Modifier vos preference</a>
+    <a href="/choix" class="button">Modifier vos preference</a>
     <p><strong>Bonjour
-        {% if 'user' in session %}
-         {{session['user']|title}}
+        {% if 'forname' in session %}
+            {{session['forname']|title}}
+        {% elif 'user' in session %}
+            {{session['user']|title}}
         {% endif%}
     </strong></p>
     <br>
@@ -27,6 +29,24 @@
             <div>{{elt}}</div>
         {% endfor %}
     {% endif%}
+
+    <br>
+
+    {% if 'favori' in session %}
+        <p><strong>Mes Recettes Favoris</strong></p>
+        {% for elt in recettes %}
+            <label>Nom</label> : {{ elt['nom'] }}
+            <br><br> Ingredients  <br><br>
+            {% for ingredient in elt['ingredient'] %}
+                {{ ingredient}}<br>
+            {% endfor %}
+            <br>
+            <label>Like</label> : {{ elt['like'] }} <label>Dislike</label> : {{ elt['dislike'] }}<br>
+        {% endfor %}
+
+    {% endif%}
+
+
 
 
 

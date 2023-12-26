@@ -2,22 +2,28 @@
 <html lang="en">
 
 <body>
-    <form action="/modif" method="post">
-        <label>Nom</label> : <input type="text" name="surname" value="{{ session['surname']}}" required/>
-        <label>Prenom</label> : <input type="text" name="forname" value="{{ session['forname'] }}" required/>
+    <a href="/profil" class="button">Profil</a><br><br>
+    <form action="/choix" method="post">
+        <label>Nom</label> : <input type="text" name="surname" value="{{ session['surname']}}"/>
+        <label>Prenom</label> : <input type="text" name="forname" value="{{ session['forname'] }}"/>
         <label>Sexe : </label>
         <select name="sexe" id="sexe">
         {% if session['sexe'] == 'Homme' %}
             <option value="Homme">Homme</option>
+            <option value=""></option>
             <option value="Femme">Femme</option>
-        {% else %}
+        {% elif session['sexe'] == 'Femme' %}
             <option value="Femme">Femme</option>
+            <option value="">
+            </option><option value="Homme">Homme</option>
+        {% else%}
+            <option value=""></option>
             <option value="Homme">Homme</option>
+            <option value="Femme">Femme</option>
         {%endif%}   
         </select>
-        <label>Budget maximum par mois</label> : <input type="number" min="0" name="budget" value="{{ session['budget'] }}" required/>
-        <label>Numéro de téléphone</label> : <input type="tel" name="tel" value="{{ session['tel'] }}"" required/>
-
+        <label>Budget maximum par mois</label> : <input type="number" min="0" name="budget" value="{{ session['budget'] }}"/>
+        <label>Numéro de téléphone</label> : <input type="tel" name="tel" value="{{ session['tel'] }}"/>
 
         <br><br><br><div>Des allergies ?</div><br>
         
@@ -39,11 +45,7 @@
         {% endfor %}
         <br><br><br>
         
-        <input type="submit" value="Envoyer" />
+        <input type="submit" value="Valider" />
     </form>
-
-
-
-
 
 </body>

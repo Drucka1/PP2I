@@ -1,0 +1,5 @@
+env/
+db.sql
+__pycache__/
+A_FAIRE.txt
+test.py

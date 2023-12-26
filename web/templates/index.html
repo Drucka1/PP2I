@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
     <body> 
 
         <p><strong>Bonjour
@@ -27,10 +26,20 @@
 
             <center>{% for elt in recettes%}
                 <br><br>
+                <form action="/index" method="post">
+                    <input type="name" name="change_fav" on hidden/>
+                    <input type="text" name="id_recette" value="{{elt['id']}}" hidden/>
+                    {% if 'user' in session and elt['id'] in session['favori']%}
+                        <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favori</label> <br>
+                    {% else %}
+                        <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favori</label> <br>
+                    {% endif %}
+                </form>
+        
                 <label>Nom</label> : {{ elt['nom'] }}
                 <br><br> Ingredients  <br><br>
                 {% for ingredient in elt['ingredient'] %}
-                    {{ ingredient }}<br>
+                    {{ ingredient}}<br>
                 {% endfor %}
                 <br>
                 <label>Like</label> : {{ elt['like'] }} <label>Dislike</label> : {{ elt['dislike'] }}<br>
