@@ -1,34 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{% block title %}WhaTNeat{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  </head>
-  <body>
+</head>
+<body>
     <header>
       <div class="container">
         <div class="title">
           <h1>WhaTNeat</h1>
         </div>
         <div class="log">
+          {% if user %}
           <div class="greet">
-            <p>Hello, {{ user.username }} !</p>
+            <p>Hello, <a href="{{ url_for('profile') }}">{{ user.username }}</a>!</p>
           </div>
           <div class="logout">
             <a href="{{ url_for('logout') }}">Log out</a>
           </div>
+          {% else %}
+          <div class="logout">
+            <a href="{{ url_for('login')}}">Login</a>
+          </div>
+          <div class="logout">
+            <a href="{{ url_for('register')}}">Register</a>
+          </div>
+          {% endif %}
         </div>
       </div>
-
     </header>
+
     <main>
       <div class="container">
-        <h1>User Profile</h1>
-        <p>Username: {{ user.username }}</p>
-        <p>Email: {{ user.email }}</p>
+        {% block content %}{% endblock %}
       </div>
     </main>
-  </body>
+
+    <footer>
+        <!-- Add footer content here -->
+    </footer>
+</body>
 </html>

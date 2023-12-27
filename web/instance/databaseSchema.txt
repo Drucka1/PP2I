@@ -1,0 +1,23 @@
+CREATE TABLE user (
+    id INTEGER PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL
+);
+CREATE TABLE recipes(id INTEGER PRIMARY KEY, title VARCHAR NOT NULL, servings INTEGER NOT NULL, servingsunit VARCHAR NOT NULL, imageURL VARCHAR NOT NULL);
+CREATE TABLE categories(id INTEGER PRIMARY KEY, name VARCHAR UNIQUE NOT NULL);
+CREATE TABLE category(recipeid INTEGER NOT NULL, categoryid INTEGER NOT NULL, PRIMARY KEY(recipeid, categoryid), FOREIGN KEY(recipeid) REFERENCES recipes(id), FOREIGN KEY(categoryid) REFERENCES categories(id));
+CREATE TABLE ingredients(id INTEGER PRIMARY KEY, name VARCHAR UNIQUE NOT NULL);
+CREATE TABLE ingredient(recipeid INTEGER NOT NULL, line INTEGER NOT NULL, amountint INTEGER NOT NULL, amountnum INTEGER NOT NULL, amountdenom INTEGER NOT NULL, amountfloat REAL NOT NULL, unit CHARACTER(2) NOT NULL, ingredientid INTEGER NOT NULL, PRIMARY KEY(recipeid, line), FOREIGN KEY(recipeid) REFERENCES recipes(id), FOREIGN KEY(ingredientid) REFERENCES ingredients(id));
+CREATE TABLE instruction(recipeid INTEGER NOT NULL, line INTEGER NOT NULL, txt TEXT NOT NULL, PRIMARY KEY(recipeid, line), FOREIGN KEY(recipeid) REFERENCES recipes(id));
+CREATE TABLE ingredientsection(recipeid INTEGER NOT NULL, line INTEGER NOT NULL, title VARCHAR(60) NOT NULL, PRIMARY KEY (recipeid, line), FOREIGN KEY(recipeid) REFERENCES recipes(id));
+CREATE TABLE instructionsection(recipeid INTEGER NOT NULL, line INTEGER NOT NULL, title VARCHAR NOT NULL, PRIMARY KEY (recipeid, line), FOREIGN KEY(recipeid) REFERENCES recipes(id));
+CREATE TABLE recipe (
+	id INTEGER NOT NULL, 
+	title VARCHAR(100) NOT NULL, 
+	content TEXT NOT NULL, 
+	date_posted DATETIME, 
+	user_id INTEGER NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES user (id)
+);

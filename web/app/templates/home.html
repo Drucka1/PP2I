@@ -1,0 +1,17 @@
+<!-- app/templates/home.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Welcome to WhaTNeat!</h2>
+<ul class="recipes">
+{% for recipe in recipes %}
+<li>
+  <h2>{{ recipe[0] }}</h2>
+  <img src="{{ recipe[1] }}" alt="{{ recipe[0] }}" loading="lazy">
+</li>
+{% endfor %}
+</ul>
+{% endblock %}

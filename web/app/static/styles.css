@@ -1,0 +1,49 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+img {
+  width: 400px;
+}
+
+li {
+  list-style: none;
+  padding: 10px;
+}
+
+.container {
+  padding: 10px 20px;
+}
+
+header {
+  background: darkolivegreen;
+  display: flex;
+  justify-content: center;
+}
+
+header .container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.log {
+  display: flex;
+  justify-content: center;
+}
+
+.recipes {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  flex-wrap: wrap;
+}
+
+.recipes li {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
