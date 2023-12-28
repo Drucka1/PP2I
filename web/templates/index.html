@@ -3,9 +3,12 @@
     <body> 
 
         <p><strong>Bonjour
-        {% if 'user' in session %}
-            {{session['user']|title}}
-        {% endif %}</strong></p>
+            {% if 'forname' in session %}
+                {{session['forname']|title}}
+            {% elif 'user' in session %}
+                {{session['user']|title}}
+            {% endif%}
+        </strong></p>
         <br>
 
         {% if 'user' in session %}
@@ -30,19 +33,29 @@
                     <input type="name" name="change_fav" on hidden/>
                     <input type="text" name="id_recette" value="{{elt['id']}}" hidden/>
                     {% if 'user' in session and elt['id'] in session['favori']%}
-                        <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favori</label> <br>
+                        <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favori</label> 
                     {% else %}
-                        <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favori</label> <br>
+                        <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favori</label> 
                     {% endif %}
                 </form>
         
-                <label>Nom</label> : {{ elt['nom'] }}
-                <br><br> Ingredients  <br><br>
-                {% for ingredient in elt['ingredient'] %}
-                    {{ ingredient}}<br>
+                <label>{{elt['nom']}}</label>
+                <br><br>
+                <img src="{{elt['image']}}" height="100" width="100">
+                <br><br>
+                </center>
+                {% for ingredient in elt['ingredient']%}
+                    - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
                 {% endfor %}
+                <center>
                 <br>
-                <label>Like</label> : {{ elt['like'] }} <label>Dislike</label> : {{ elt['dislike'] }}<br>
+                <details>
+                    <summary>Details de la recette</summary><br>
+                    {% for instruction in elt['instruction']%}
+                        - {{instruction}}<br><br>
+                    {% endfor %}
+                </details>
+
             {% endfor %}</center>
         {% endif %}
 

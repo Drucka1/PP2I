@@ -32,19 +32,17 @@ def get_recette(cursor):
         dict_tmp = {}
         dict_tmp['id'] = elt[0]
         dict_tmp['nom'] = elt[1]
-        dict_tmp['like'] = elt[2]
-        dict_tmp['dislike'] = elt[3]
+        dict_tmp['image'] = elt[4]
         recettes.append(dict_tmp)
         
     for elt in recettes:
         c = get_db().cursor()
-        c.execute("SELECT ingredient,quantite,unite FROM details_recette WHERE id_recette='"+str(elt['id'])+"'")
-        
-        elt['ingredient'] = []
-        
-        for elt_ in list(c):
-            elt['ingredient'].append(''.join([ str(ele) + ' ' for ele in elt_ if ele != 'u']))
-        
+        c.execute("SELECT name,amountint,unit FROM ingredient JOIN ingredients ON ingredients.id = ingredient.ingredientid WHERE recipeid='"+str(elt['id'])+"' ORDER BY line")
+        elt['ingredient'] = list(c)
+        d = get_db().cursor()
+        d.execute("SELECT txt FROM instruction WHERE recipeid='"+str(elt['id'])+"' ORDER BY line")
+        elt['instruction'] = [elt_[0] for elt_ in list(d) if elt_[0] != '']
+                
     return recettes
 
 def get_ustensiles():
@@ -66,7 +64,6 @@ def index():
     if request.method == "POST" and 'user' in session:
         result = request.form.to_dict() 
         if 'change_fav' in result :
-            
             if 'fav' in result:
                 e = get_db().cursor()
                 e.execute("SELECT * FROM favori WHERE id_recette="+str(result['id_recette'])+" and id_user="+str(session['id']))
@@ -87,12 +84,12 @@ def index():
                 tmp.remove(int(result['id_recette']))
                 session['favori']=tmp
                 
-            c.execute("SELECT * FROM recette")
+            c.execute("SELECT * FROM recipes")
         else :
-            c.execute("SELECT * FROM recette WHERE nom LIKE '%"+str(request.form ['nom_recette'])+"%'")
+            c.execute("SELECT * FROM recipes WHERE title LIKE '%"+str(request.form['nom_recette'])+"%'")
         
     else:  
-        c.execute("SELECT * FROM recette")
+        c.execute("SELECT * FROM recipes LIMIT 10")
       
     return render_template('index.html',recettes=get_recette(c))
 
@@ -191,6 +188,7 @@ def register():
             session['id'] = tmp[0][0]
             session['ustensile']=[]
             session['allergene']=[]
+            session['favori']=[]
             return redirect("/choix")
         
         else:
@@ -205,7 +203,7 @@ def register():
 @app.route('/profil')
 def profil():
     c = get_db().cursor()
-    c.execute("SELECT * FROM recette JOIN favori ON recette.id = favori.id_recette WHERE id_user ="+str(session['id']))
+    c.execute("SELECT * FROM recipes JOIN favori ON recipes.id = favori.id_recette WHERE id_user ="+str(session['id']))
     return render_template("profil.html",recettes=get_recette(c))
         
 @app.route('/choix',methods=['POST','GET'])

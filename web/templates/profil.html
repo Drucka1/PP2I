@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <body>
-    
     <a href="/index" class="button">Menu</a>
     <a href="/choix" class="button">Modifier vos preference</a>
     <p><strong>Bonjour
@@ -33,24 +33,26 @@
     <br>
 
     {% if 'favori' in session %}
-        <p><strong>Mes Recettes Favoris</strong></p>
+        <p><strong>Mes recettes favoris</strong></p>
         {% for elt in recettes %}
-            <label>Nom</label> : {{ elt['nom'] }}
-            <br><br> Ingredients  <br><br>
-            {% for ingredient in elt['ingredient'] %}
-                {{ ingredient}}<br>
-            {% endfor %}
-            <br>
-            <label>Like</label> : {{ elt['like'] }} <label>Dislike</label> : {{ elt['dislike'] }}<br>
+            <div style="padding:10px 20px 20px;height:1000px;float : left"> 
+                <center><label>{{elt['nom']}}</label>
+                <br><br>
+                <img src="{{elt['image']}}" height="100" width="100">
+                <br><br>
+                </center>
+                {% for ingredient in elt['ingredient']%}
+                    - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
+                {% endfor %}
+                
+                <br>
+                <details>
+                    <summary>Details de la recette</summary><br>
+                    {% for instruction in elt['instruction']%}
+                        - {{instruction}}<br><br>
+                    {% endfor %}
+                </details>
+            </div>
         {% endfor %}
-
     {% endif%}
-
-
-
-
-
-
-
-
 </body>
