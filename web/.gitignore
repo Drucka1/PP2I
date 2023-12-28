@@ -1,7 +1,7 @@
 database/
 test.py
 test.db
-./env/
+env/
 db.sql
 __pycache__/
 /A_FAIRE.txt
