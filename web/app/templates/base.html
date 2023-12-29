@@ -10,7 +10,11 @@
     <header>
       <div class="container">
         <div class="title">
-          <h1>WhaTNeat</h1>
+          <h1>
+            <a href="{{ url_for('home') }}">
+          WhaTNeat
+          </a>
+          </h1>
         </div>
         <div class="log">
           {% if user %}
@@ -21,10 +25,10 @@
             <a href="{{ url_for('logout') }}">Log out</a>
           </div>
           {% else %}
-          <div class="logout">
+          <div class="login">
             <a href="{{ url_for('login')}}">Login</a>
           </div>
-          <div class="logout">
+          <div class="register">
             <a href="{{ url_for('register')}}">Register</a>
           </div>
           {% endif %}

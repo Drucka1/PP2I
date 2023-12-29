@@ -1,6 +1,6 @@
-<!-- app/templates/register.html -->
-
 {% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
 
 {% block content %}
   <h2>Register</h2>
@@ -14,14 +14,24 @@
     {% endif %}
   {% endwith %}
   <form method="post">
+    <div class="input">
     <label for="username">Username:</label>
     <input type="text" name="username" required>
-    <label for="password">Password:</label>
-    <input type="password" name="password" required>
+    </div>
+    <div class="input">
     <label for="email">Email:</label>
     <input type="email" name="email" required>
+    </div>
+    <div class="input">
+    <label for="password">Password:</label>
+    <input type="password" name="password" required>
+    </div>
+    <div class="input">
+    <label for="confirmPassword">Confirm password:</label>
+    <input type="password" name="confirmPassword" required>
+    </div>
+    <p>Already have an account? <a href="{{ url_for('login') }}">Log in here</a>.</p>
     <button type="submit">Register</button>
   </form>
-  <p>Already have an account? <a href="{{ url_for('login') }}">Log in here</a>.</p>
 {% endblock %}
 

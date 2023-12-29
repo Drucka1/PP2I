@@ -37,8 +37,13 @@ def home():
 def register():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']
         email = request.form['email']
+        password = request.form['password']
+        confirmPassword = request.form['confirmPassword']
+
+        if password != confirmPassword:
+            flash("Passwords do not match")
+            return render_template('register.html')
 
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -77,7 +82,6 @@ def logout():
 
 @app.route('/profile')
 def profile():
-    # Retrieve the user from the database based on the user_id stored in the session
     user_id = session.get('user_id')
     if user_id:
         user = User.query.get(user_id)
@@ -86,3 +90,16 @@ def profile():
     flash('You need to log in to access this page.', 'warning')
     return redirect(url_for('login'))
 
+'''
+@app.route('/preferences', methods=['GET', 'POST'])
+def preferences():
+    user_id = session.get('user_id')
+    if user_id:
+        user = USer.query.get(user_id)
+        if user:
+            gender = request.form['gender']
+            maximumBudget = request.form['maximumBudget'] 
+
+    flash('You need to log in to access this page.', 'warning')
+    return redirect(url_for('login'))
+'''
