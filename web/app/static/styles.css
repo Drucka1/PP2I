@@ -79,7 +79,7 @@ header .log {
   grid-template-rows: masonry;
 }
 
-.recipes li {
+.recipes a {
   display: flex;
   align-items: center;
   flex-direction: column;

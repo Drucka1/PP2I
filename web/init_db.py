@@ -23,7 +23,7 @@ def init_db():
         execute_sql_command(sql_command_user)
 
     # Execute food.sql
-    with open(os.path.join(sql_folder, 'food.sql'), 'r') as file:
+    with open(os.path.join(sql_folder, 'randomPrices.sql'), 'r') as file:
         sql_command_food = file.read()
         execute_sql_command(sql_command_food)
 

@@ -1,0 +1,32 @@
+<!-- templates/recipe.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}{{ recipeData.title }}{% endblock %}
+
+{% block content %}
+  <h2>{{ recipeData.title }}</h2>
+  <img src="{{ recipeData.imageURL }}" alt="{{ recipeData.title }}" loading="lazy">
+
+  <p>Category: {{ recipeData.category }}</p>
+
+  <h3>Ingredients:</h3>
+  <ul>
+    {% for ingredient in recipeData.ingredients %}
+      <li>
+        {{ ingredient.name }}:
+        {% if ingredient.amountint %}
+          {% if ingredient.amountnum %}
+            {{ ingredient.amountnum }}/{{ ingredient.amountdenom or 1 }}
+          {% else %}
+            {{ ingredient.amountint }}
+          {% endif %}
+        {% endif %}
+        {{ ingredient.unit }}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <!-- Add other recipe details here -->
+
+{% endblock %}

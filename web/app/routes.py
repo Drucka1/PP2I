@@ -1,7 +1,7 @@
 from flask import render_template, g, request, redirect, url_for, flash, session
 from flask_bcrypt import Bcrypt
 from app import app, db
-from app.models import User
+from app.models import User, Recipe
 from app.aux import deleteOccurences, search
 import sqlite3
 import os
@@ -28,7 +28,7 @@ def home():
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute('SELECT title, imageURL FROM recipes')
+    cursor.execute('SELECT title, imageURL, id FROM recipes')
     recipes_data = deleteOccurences(cursor.fetchall())
 
     if request.method == 'GET':
@@ -93,6 +93,62 @@ def profile():
             return render_template('profile.html', user=user)
     flash('You need to log in to access this page.', 'warning')
     return redirect(url_for('login'))
+
+@app.route('/recipes/<int:recipeId>')
+def recipe(recipeId):
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                r.title,
+                r.imageURL,
+                c.name as category,
+                ig.name as ingredient_name,
+                i.amountint,
+                i.amountnum,
+                i.amountdenom,
+                i.amountfloat,
+                i.unit
+            FROM recipes as r
+            JOIN category as rc ON r.id = rc.recipeid
+            JOIN categories as c ON rc.categoryid = c.id
+            LEFT JOIN ingredient as i ON r.id = i.recipeid
+            LEFT JOIN ingredients as ig ON i.ingredientid = ig.id
+            WHERE r.id = ?
+        """, (recipeId,))
+
+        rows = cursor.fetchall()
+
+        if not rows:
+            return render_template('not_found.html', message='Recipe not found')
+
+        recipeData = {
+            'title': rows[0][0],
+            'imageURL': rows[0][1],
+            'category': rows[0][2],
+            'ingredients': []
+        }
+
+        for row in rows:
+            if row[3]:  
+                ingredient = {
+                    'name': row[3],
+                    'amountint': row[4],
+                    'amountnum': row[5],
+                    'amountdenom': row[6],
+                    'amountfloat': row[7],
+                    'unit': row[8]
+                }
+                recipeData['ingredients'].append(ingredient)
+
+        return render_template('recipe.html', recipeData=recipeData)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template('error.html')
+
 
 '''
 @app.route('/preferences', methods=['GET', 'POST'])

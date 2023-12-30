@@ -22,8 +22,10 @@
 <ul class="recipes">
 {% for recipe in recipes %}
 <li>
+  <a href="{{ url_for('recipe', recipeId=recipe[2]) }}">
   <h2>{{ recipe[0] }}</h2>
   <img src="{{ recipe[1] }}" alt="{{ recipe[0] }}" loading="lazy">
+  </a>
 </li>
 {% endfor %}
 </ul>
