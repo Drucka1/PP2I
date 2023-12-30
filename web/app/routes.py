@@ -2,6 +2,7 @@ from flask import render_template, g, request, redirect, url_for, flash, session
 from flask_bcrypt import Bcrypt
 from app import app, db
 from app.models import User
+from app.aux import deleteOccurences, search
 import sqlite3
 import os
 
@@ -11,7 +12,6 @@ def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db_path = os.path.join(app.root_path, '../instance', 'site.db')
-        print(f"Database Path: {db_path}")
         db = g._database = sqlite3.connect(db_path)
     return db
 
@@ -21,7 +21,7 @@ def close_db(error):
     if db is not None:
         db.close()
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
     user = User.query.get(session.get('user_id')) if 'user_id' in session else None
 
@@ -29,7 +29,11 @@ def home():
     cursor = conn.cursor()
 
     cursor.execute('SELECT title, imageURL FROM recipes')
-    recipes_data = cursor.fetchall()
+    recipes_data = deleteOccurences(cursor.fetchall())
+
+    if request.method == 'GET':
+        query = request.args.get('query', '')
+        recipes_data = search(query, recipes_data)
 
     return render_template('home.html', user=user, recipes=recipes_data)
 

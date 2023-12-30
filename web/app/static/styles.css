@@ -68,13 +68,6 @@ header .log {
   align-items: center;
 }
 
-/* Specify Search */
-
-.specifySearch {
-  margin: 20px 0px;
-  display: flex;
-  justify-content: space-between;
-}
 
 /* Recipe layout */
 
@@ -110,4 +103,23 @@ input, buttom {
   padding: 5px 0px;
   margin-top: 5px;
   margin-bottom: 20px;
+}
+
+/* Specify Search */
+
+.specifySearch {
+  margin: 20px 0px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.searchBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.searchBar input {
+  padding: 5px 0px;
+  margin: 0;
 }
