@@ -1,21 +1,27 @@
-<!-- templates/recipe.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}{{ recipeData.title }}{% endblock %}
 
 {% block content %}
-  <h2>{{ recipeData.title }}</h2>
+  <section class="recipe container">
+    <div class="title">
+  <h1>{{ recipeData.title }}</h1>
+    </div>
+
   <img src="{{ recipeData.imageURL }}" alt="{{ recipeData.title }}" loading="lazy">
 
   <p>Category: {{ recipeData.category }}</p>
 
-  <h3>Ingredients:</h3>
-  <ul>
+  <section class="ingredients">
+    <div class="title">
+  <h1> To prepare this meal you will need :</h1>
+    </div>
+  <ul class="ingredient list">
     {% for ingredient in recipeData.ingredients %}
       <li>
-        {{ ingredient.name }}:
+        {{ ingredient.name }}
         {% if ingredient.amountint %}
+          :
           {% if ingredient.amountnum %}
             {{ ingredient.amountnum }}/{{ ingredient.amountdenom or 1 }}
           {% else %}
@@ -26,7 +32,6 @@
       </li>
     {% endfor %}
   </ul>
-
-  <!-- Add other recipe details here -->
-
+  </section>
+  </section>
 {% endblock %}

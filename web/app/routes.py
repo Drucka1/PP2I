@@ -2,7 +2,7 @@ from flask import render_template, g, request, redirect, url_for, flash, session
 from flask_bcrypt import Bcrypt
 from app import app, db
 from app.models import User, Recipe
-from app.aux import deleteOccurences, search
+from app.aux import deleteOccurences, deleteOccurencesIngredients, search
 import sqlite3
 import os
 
@@ -120,7 +120,6 @@ def recipe(recipeId):
         """, (recipeId,))
 
         rows = cursor.fetchall()
-
         if not rows:
             return render_template('not_found.html', message='Recipe not found')
 
@@ -141,7 +140,9 @@ def recipe(recipeId):
                     'amountfloat': row[7],
                     'unit': row[8]
                 }
+
                 recipeData['ingredients'].append(ingredient)
+        recipeData['ingredients'] = deleteOccurencesIngredients(recipeData['ingredients'])
 
         return render_template('recipe.html', recipeData=recipeData)
 

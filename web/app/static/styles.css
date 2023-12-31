@@ -21,6 +21,20 @@ a {
   text-decoration: none;
 }
 
+.title {
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 40px;
+  margin-bottom: 15px
+}
+
+h2 {
+  font-size: 30px;
+}
+
+
 img {
   width: 400px;
   border-radius: var(--recipeBorderRadius);
@@ -31,9 +45,17 @@ li {
   padding: 10px;
 }
 
+section {
+  margin-top: 20px;
+}
+
 .container {
   padding: 10px 20px;
   width: 80vw;
+}
+
+.title {
+  margin-bottom: 10px;
 }
 
 main {
@@ -123,3 +145,18 @@ input, buttom {
   padding: 5px 0px;
   margin: 0;
 }
+
+/* Recipes */
+
+.recipe .container {
+  display: flex;
+  justify-content: center;
+}
+
+.recipe img {
+  width : 100%;
+}
+
+/* Ingredients */
+
+

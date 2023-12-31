@@ -9,12 +9,12 @@
 <body>
     <header>
       <div class="container">
-        <div class="title">
-          <h1>
+        <div>
+          <h2>
           <a href="{{ url_for('home') }}">
           WhaTNeat
           </a>
-          </h1>
+          </h2>
         </div>
         <div class="log">
           {% if user %}
@@ -37,9 +37,9 @@
     </header>
 
     <main>
-      <div class="container">
+      <section>
         {% block content %}{% endblock %}
-      </div>
+      </section>
     </main>
 
     <footer>
