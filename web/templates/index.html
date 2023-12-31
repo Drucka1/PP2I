@@ -27,36 +27,34 @@
                 <input type="text" name="nom_recette" /> <input type="submit" value="Rechercher" />
             </form>
 
-            <center>{% for elt in recettes%}
-                <br><br>
-                <form action="/index" method="post">
-                    <input type="name" name="change_fav" on hidden/>
-                    <input type="text" name="id_recette" value="{{elt['id']}}" hidden/>
-                    {% if 'user' in session and elt['id'] in session['favori']%}
-                        <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favori</label> 
-                    {% else %}
-                        <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favori</label> 
-                    {% endif %}
-                </form>
-        
-                <label>{{elt['nom']}}</label>
-                <br><br>
-                <img src="{{elt['image']}}" height="100" width="100">
-                <br><br>
-                </center>
-                {% for ingredient in elt['ingredient']%}
-                    - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
-                {% endfor %}
-                <center>
-                <br>
-                <details>
-                    <summary>Details de la recette</summary><br>
-                    {% for instruction in elt['instruction']%}
-                        - {{instruction}}<br><br>
+            {% for elt in recettes%}
+                <div style="padding:10px 20px 20px;display: inline-table;"> 
+                    <br><br>
+                    <form action="/index" method="post">
+                        <input type="name" name="change_fav" on hidden/>
+                        <input type="text" name="id_recette" value="{{elt['id']}}" hidden/>
+                        {% if 'user' in session and elt['id'] in session['favori']%}
+                            <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favori</label> 
+                        {% else %}
+                            <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favori</label> 
+                        {% endif %}
+                    </form>
+                    <br>{{elt['nom']}}<br><br>
+                    <img src="{{elt['image']}}" height="100" width="100">
+                    <br><br>
+                    {% for ingredient in elt['ingredient']%}
+                        - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
                     {% endfor %}
-                </details>
+                    <br>
+                    <details>
+                        <summary>Details de la recette</summary><br>
+                        {% for instruction in elt['instruction']%}
+                            - {{instruction}}<br><br>
+                        {% endfor %}
+                    </details>
+                </div>
 
-            {% endfor %}</center>
+            {% endfor %}
         {% endif %}
 
     </body>

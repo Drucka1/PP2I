@@ -10,10 +10,9 @@ def ajout_elt(l,elt):
     l_.append(elt)
     return l_
 
-def creation_liste_repas(recettes,budget__max,nb_repas):
+def creation_menu(recettes,budget__max,nb_repas):
     recette_melange = sample(recettes,k=len(recettes))
     
-    menus_possible = []
     def rec(recette_utilise,budget_encours,recette_restante):
         if len(recette_utilise) == nb_repas :
             return recette_utilise
@@ -26,4 +25,5 @@ def creation_liste_repas(recettes,budget__max,nb_repas):
         return []
     return rec([],0,recette_melange)  
     
-print(creation_liste_repas([(1,4),(2,8),(3,3),(4,6),(5,7),(6,15)],13,3))
+print(tuple([1,2,3,4]))
+#print(creation_menu([(1,4),(2,8),(3,3),(4,6),(5,7),(6,15)],50,3))

@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 from flask import g
+from random import sample
 import sqlite3
 import hashlib
 
@@ -125,7 +126,7 @@ def login():
             tmp = list(e)
 
             if len(tmp) == 1:
-                l = ['forname','surname','tel','budget','sexe']
+                l = ['budget','forname','surname','tel','sexe']
                 for elt in set(zip(l,tmp[0][1:])):
                     if elt[1] != None:
                         session[elt[0]] = elt[1]
@@ -169,9 +170,12 @@ def register():
         if len(c.fetchall()) != 0 and em != '':
             error = "Probleme d'email"
     
-        if pw != pwrt and pw != '':
+        if pw != pwrt:
             error = "Mot de passe different"
-        
+            
+        if pw != '':
+            error = "Veuillez saisir un mdp"
+            
         if error != None:
             return render_template('register.html',error=error)
         
@@ -200,8 +204,49 @@ def register():
         else:
             return render_template("register.html")
     
-@app.route('/profil')
+    
+    
+       
+def retire_elt(l,elt):
+    l_ = l.copy()
+    l_.remove(elt)
+    return l_
+
+def ajout_elt(l,elt):
+    l_ = l.copy()
+    l_.append(elt)
+    return l_
+
+def creation_menu(recettes,budget__max,nb_repas):
+    recette_melange = sample(recettes,k=len(recettes))
+    
+    def rec(recette_utilise,budget_encours,recette_restante):
+        if len(recette_utilise) == nb_repas :
+            return recette_utilise
+        
+        for elt in recette_restante:
+            if budget_encours + elt[1] <= budget__max:
+               tmp = rec(ajout_elt(recette_utilise,elt[0]),budget_encours + elt[1],retire_elt(recette_restante,elt))
+               if tmp != [] :
+                   return tmp
+        return []
+    return rec([],0,recette_melange)
+    
+
+@app.route('/profil',methods=['POST','GET'])
 def profil():
+    if request.method == "POST" and 'user' in session:
+        #rajouter ordre des recettes
+        c = get_db().cursor()
+        c.execute("SELECT id,1 FROM recipes LIMIT 50")
+        
+        menu = creation_menu(list(c),int(session["budget"]),int(request.form["nb_rec"]))
+        
+        d = get_db().cursor()
+        d.execute("SELECT * FROM recipes WHERE id IN "+str(tuple(menu)))
+        
+        session['menu'] =   get_recette(list(d))
+        
     c = get_db().cursor()
     c.execute("SELECT * FROM recipes JOIN favori ON recipes.id = favori.id_recette WHERE id_user ="+str(session['id']))
     return render_template("profil.html",recettes=get_recette(c))
