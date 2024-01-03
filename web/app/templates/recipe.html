@@ -6,7 +6,9 @@
   <section class="recipe container">
     <div class="title">
   <h1>{{ recipeData.title }}</h1>
+  {{ recipeData.price }}
     </div>
+    
 
   <img src="{{ recipeData.imageURL }}" alt="{{ recipeData.title }}" loading="lazy">
 
@@ -29,9 +31,18 @@
           {% endif %}
         {% endif %}
         {{ ingredient.unit }}
+        <div class="price"> {{ ingredient.price }} </div>
       </li>
     {% endfor %}
   </ul>
+  </section>
+  <section class="instructions">
+    <h1>Instructions</h1>
+  <ol>
+    {% for instruction in recipeData.instructions %}
+      <li>{{ instruction.text }}</li>
+    {% endfor %}
+  </ol>
   </section>
   </section>
 {% endblock %}

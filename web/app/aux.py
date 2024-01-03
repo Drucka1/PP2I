@@ -19,5 +19,37 @@ def search(query: str, data: list) -> list:
             found.append(item)
     return found
 
+def knapsack(maxBudget: int, recipes: list, prices: list) -> int:
+    def currentPrice(recipes: list, prices: list):
+        return sum([prices[i] if recipe else 0 for i, recipe in enumerate(recipes)])
+
+    def addRecipe(currentRecipes: list, index: int):
+        return [1 if i == index else recipe for i, recipe in enumerate(currentRecipes)]
+
+    def solve(depth: int, maxBudget:int, recipes: list, prices: list) -> list:
+        if depth < 0:
+            return recipes
+
+        takeBudget = maxBudget - prices[depth]
+        noTake = solve(depth - 1, maxBudget, recipes, prices) 
+        noTakePrice = currentPrice(noTake, prices)
+        if 0 <= takeBudget:
+            takeRecipes = addRecipe(recipes, depth)
+            take = solve(depth - 1, takeBudget, takeRecipes, prices)
+            takePrice = currentPrice(take, prices)
+
+            if noTakePrice <= takePrice:
+                return take
+        
+        return noTake 
+
+    maxDepth = len(recipes) - 1
+    budget = maxBudget - currentPrice(recipes, prices)
+    return solve(maxDepth, budget, recipes, prices)
+        
+
+
 if __name__ == "__main__":
-    print(deleteOccurences([1,1,2,3,4]))
+    print(knapsack(13, [0, 0, 0, 0, 0], [3, 3, 3, 3, 3])) 
+    print(sum({'one': 1, 'deux': 2}))
+    

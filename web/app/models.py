@@ -6,6 +6,11 @@ class User(db.Model):
     password = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
 
+    lastname = db.Column(db.String(80))
+    firstname = db.Column(db.String(80))
+    gender = db.Column(db.String(20))
+    budget = db.Column(db.Float)
+
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)

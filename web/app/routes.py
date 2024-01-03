@@ -110,12 +110,15 @@ def recipe(recipeId):
                 i.amountnum,
                 i.amountdenom,
                 i.amountfloat,
-                i.unit
+                i.unit,
+                ig.price,
+                ins.txt as instruction_text
             FROM recipes as r
             JOIN category as rc ON r.id = rc.recipeid
             JOIN categories as c ON rc.categoryid = c.id
             LEFT JOIN ingredient as i ON r.id = i.recipeid
             LEFT JOIN ingredients as ig ON i.ingredientid = ig.id
+            LEFT JOIN instruction as ins ON r.id = ins.recipeid
             WHERE r.id = ?
         """, (recipeId,))
 
@@ -127,7 +130,9 @@ def recipe(recipeId):
             'title': rows[0][0],
             'imageURL': rows[0][1],
             'category': rows[0][2],
-            'ingredients': []
+            'ingredients': [],
+            'instructions' : [],
+            'price': 0
         }
 
         for row in rows:
@@ -138,11 +143,21 @@ def recipe(recipeId):
                     'amountnum': row[5],
                     'amountdenom': row[6],
                     'amountfloat': row[7],
-                    'unit': row[8]
+                    'unit': row[8],
+                    'price': row[9]
                 }
 
                 recipeData['ingredients'].append(ingredient)
+            
+            if row[10]:
+                instruction = {
+                    'text': row[10]
+                }
+                recipeData['instructions'].append(instruction)        
+        
         recipeData['ingredients'] = deleteOccurencesIngredients(recipeData['ingredients'])
+        recipeData['instructions'] = deleteOccurencesIngredients(recipeData['instructions'])
+        recipeData['price'] = sum([ig.get('price') for ig in recipeData['ingredients']])
 
         return render_template('recipe.html', recipeData=recipeData)
 
@@ -151,16 +166,24 @@ def recipe(recipeId):
         return render_template('error.html')
 
 
-'''
 @app.route('/preferences', methods=['GET', 'POST'])
 def preferences():
     user_id = session.get('user_id')
     if user_id:
-        user = USer.query.get(user_id)
+        user = User.query.get(user_id)
         if user:
-            gender = request.form['gender']
-            maximumBudget = request.form['maximumBudget'] 
+            if request.method == 'POST':
+
+                gender = request.form['gender']
+                budget = request.form['budget'] 
+
+                user.gender = gender
+                user.budget = budget
+                db.session.commit()
+                
+                return redirect(url_for('profile'))
+
+            return render_template('preferences.html', user=user)
 
     flash('You need to log in to access this page.', 'warning')
     return redirect(url_for('login'))
-'''
