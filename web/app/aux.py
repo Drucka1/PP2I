@@ -20,6 +20,7 @@ def search(query: str, data: list) -> list:
     return found
 
 def knapsack(maxBudget: int, recipes: list, prices: list) -> int:
+    memo = {}
     def currentPrice(recipes: list, prices: list):
         return sum([prices[i] if recipe else 0 for i, recipe in enumerate(recipes)])
 
@@ -30,6 +31,9 @@ def knapsack(maxBudget: int, recipes: list, prices: list) -> int:
         if depth < 0:
             return recipes
 
+        if (depth, maxBudget) in memo:
+            return memo[(depth, maxBudget)]
+
         takeBudget = maxBudget - prices[depth]
         noTake = solve(depth - 1, maxBudget, recipes, prices) 
         noTakePrice = currentPrice(noTake, prices)
@@ -39,9 +43,14 @@ def knapsack(maxBudget: int, recipes: list, prices: list) -> int:
             takePrice = currentPrice(take, prices)
 
             if noTakePrice <= takePrice:
-                return take
-        
-        return noTake 
+                result = take
+            else:
+                result = noTake
+        else:
+            result = noTake
+
+        memo[(depth, maxBudget)] = result
+        return result
 
     maxDepth = len(recipes) - 1
     budget = maxBudget - currentPrice(recipes, prices)
@@ -51,5 +60,4 @@ def knapsack(maxBudget: int, recipes: list, prices: list) -> int:
 
 if __name__ == "__main__":
     print(knapsack(13, [0, 0, 0, 0, 0], [3, 3, 3, 3, 3])) 
-    print(sum({'one': 1, 'deux': 2}))
     
