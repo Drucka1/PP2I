@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Planify Results{% endblock %}
+
+{% block content %}
+  <h2>Planify Results</h2>
+
+  <p>Your Selected Diet: {{ diet }}</p>
+  <p>Your Maximum Budget: ${{ max_budget }}</p>
+
+  <h3>Recommended Recipe Plan:</h3>
+  <ul>
+    {% for recipe in recipe_plan %}
+      <li>
+        {{ recipe.title }}
+        <img src="{{ recipe.imageURL }}" alt="{{ recipe.title }}">
+        {{ recipe.price }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

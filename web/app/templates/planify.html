@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Planify{% endblock %}
+
+{% block content %}
+  <h2>Planify Your Meals</h2>
+
+  <form method="post" action="{{ url_for('planify') }}">
+    <label for="diet">Select diet:</label>
+    <select id="diet" name="diet">
+      <!-- Options for diet -->
+      <option value="Vegetarian">Vegetarian</option>
+      <option value="Vegan">Vegan</option>
+      <!-- Add more options as needed -->
+    </select>
+
+    <label for="max_budget">Maximum Budget:</label>
+    <input type="number" id="max_budget" name="max_budget" required>
+
+    <button type="submit">Generate Plan</button>
+  </form>
+{% endblock %}
