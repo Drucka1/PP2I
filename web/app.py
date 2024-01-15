@@ -43,17 +43,10 @@ def get_recette(cursor):
     return recettes
 
 def get_recette_realisable_user():
-    def instruction_appartient(elt,liste):
-        for elt1 in liste:
-            for elt2 in elt1:
-                if elt in elt2:
-                    return True
-        return False
-    
-    def ingredient_appartient(elt,liste):
-        for elt1 in liste:
-            for elt2 in elt1:
-                if elt in elt2[0]:
+    def appartient_liste_liste(elt,liste_liste):
+        for liste in liste_liste:
+            for elt_ in liste:
+                if type(elt_) != int and elt in elt_ :
                     return True
         return False
             
@@ -64,12 +57,12 @@ def get_recette_realisable_user():
     
     for allergene in session['allergene']:
         for recette in recettes:
-            if   ingredient_appartient(allergene,recette['ingredient']) or instruction_appartient(allergene,recette['instruction']) :
+            if appartient_liste_liste(allergene,recette['ingredient']) or appartient_liste_liste(allergene,recette['instruction']) :
                 recettes.remove(recette)
 
     for ustensile in get_ustensiles():
         for recette in recettes:
-            if ustensile not in session['ustensile'] and instruction_appartient(ustensile,recette['instruction']):
+            if ustensile not in session['ustensile'] and appartient_liste_liste(ustensile,recette['instruction']):
                 recettes.remove(recette)
                 
     return [recette['id'] for recette in recettes]
@@ -172,11 +165,11 @@ def index():
             
             
             c = get_db().cursor()
-            c.execute("SELECT * FROM recipes LIMIT 50")
+            c.execute("SELECT * FROM recipes ")
             return redirect(url_for('index',_anchor=str(result['id_recette']),recettes=get_recette(c)))
         
     c = get_db().cursor()
-    c.execute("SELECT * FROM recipes LIMIT 50")
+    c.execute("SELECT * FROM recipes")
     return render_template('index.html', recettes = get_recette(c))
 
 @app.route('/login',methods=['POST','GET'])
@@ -314,6 +307,7 @@ def profil():
             session['favori']=tmp
        
         elif 'budget' in session and 'nb_rec' in result:
+            
             c = get_db().cursor()
             c.execute("SELECT recipes.id,sum(ingredients.price) FROM recipes JOIN ingredient ON ingredient.recipeid =recipes.id JOIN ingredients ON ingredient.ingredientid = ingredients.id GROUP BY recipes.id HAVING recipes.id IN "+str(tuple(get_recette_realisable_user())))
             

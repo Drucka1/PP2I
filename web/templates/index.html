@@ -47,7 +47,7 @@
                         {% endif %}
                     </form>
                     <br>{{elt['nom']}}<br><br>
-                    <img src="{{elt['image']}}" height="100" width="100">
+                    <img src="{{elt['image']}}" loading="lazy" height="100" width="100">
                     <br><br>
                     {% for ingredient in elt['ingredient']%}
                         {%if ingredient[1] != 0 %}    
