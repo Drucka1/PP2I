@@ -1,10 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- app/templates/profile.html -->
 
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+
+{% block head %}    
     <a href="/index" class="button">Menu</a>
+    <a href="/logout" class="link">Log out</a>
     <a href="/choix" class="button">Change your preference</a>
-    <p><strong>Bonjour
+{% endblock %}
+
+
+{% block content %}
+    <p><strong>Hello
         {% if 'forname' in session %}
             {{session['forname']|title}}
         {% elif 'user' in session %}
@@ -13,20 +22,19 @@
     </strong></p><br>
 
     {% if 'allergene' in session %}
-        <p><strong>My allergies</strong></p>
-        {% for elt in session['allergene'] %}
-            <div>{{elt}}</div>
-        {% endfor %}
+            <p><strong>My allergies</strong></p><br>
+            {% for elt in session['allergene'] %}
+                {{elt}} &emsp;    
+            {% endfor %}
     {% endif%}
 
     {% if 'ustensile' in session %}
-        <p><strong>My kitchen utensils</strong></p>
-        {% for elt in session['ustensile'] %}
-            <div>{{elt}}</div>
-        {% endfor %}
+        <br><p><strong>My kitchen utensils</strong></p><br>
+            {% for elt in session['ustensile'] %}
+                {{elt}} &emsp;
+            {% endfor %}
     {% endif%}
 
-    
     {% if 'favori' in session %}
         <section>
         <p><strong>My favorite recipes</strong></p>
@@ -39,7 +47,7 @@
                 </form>
                 <center><label>{{elt['nom']}}</label>
                 <br><br>
-                <img src="{{elt['image']}}" height="100" width="100">
+                <img src="{{elt['image']}}">
                 <br><br>
                 {% for ingredient in elt['ingredient']%}
                     {%if ingredient[1] != 0 %}    
@@ -58,7 +66,6 @@
         {% endfor %}
         </section>
     {% endif%}
-    
 
     {% if 'user' in session %}
         <p><strong>My personalized menus </strong></p>
@@ -74,7 +81,7 @@
                 <div style="padding:10px 20px 20px;display: inline-table" id="menu">
                     <label>{{elt['nom']}}</label>
                     <br><br>
-                    <img src="{{elt['image']}}" height="100" width="100">
+                    <img src="{{elt['image']}}">
                     <br><br>
                     {% for ingredient in elt['ingredient']%}
                         {%if ingredient[1] != 0 %}    
@@ -90,7 +97,6 @@
                     </details>
                 </div>
             {% endfor %}
-            </section>
-        
+            </section>  
     {% endif%}
-</body>
+{% endblock %}  

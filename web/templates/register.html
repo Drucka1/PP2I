@@ -1,22 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block head %}    
     <a href="/index" class="button">Menu</a>
+{% endblock %}
 
+{% block content %}
+
+    <h2>Register</h2>
     <center>{% if error%}
         <p><strong>{{error}}</strong></p>
-    {% endif%}</center>
-
+        {% endif%}</center>
     <form action="/register" method="post">
-        <center><label>Username</label> : <input type="text" name="username" /></center>
-        <center><label>Email</label> : <input type="text" name="email" /></center>
-        <center><label>Password</label> : <input type="password" name="password" /></center>
-        <center><label>Retyped password</label> : <input type="password" name="password_retype" /></center>
-        <center><input type="submit" value="Validate" /></center>
+        <div class="input">
+            <label for="username">Username:</label>
+            <input type="text" name="username" required>
+        </div>
+        <div class="input">
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+        </div>
+        <div class="input">
+            <label for="password">Password:</label>
+            <input type="password" name="password" required>
+        </div>
+        <div class="input">
+            <label for="confirmPassword">Confirm password:</label>
+            <input type="password" name="password_retype" required>
+        </div>
+        <p>Already have an account? <a href="/login" class="link">Sign in here</a>.</p><br><br>
+        <button type="submit" value="Validate">Register</button>
     </form>
-    <center><a href="/login" class="link">Already have an account? Sign in here</a></center>
-
-    
-</body>
-</html>
+{% endblock %}

@@ -16,25 +16,8 @@
           </a>
           </h2>
         </div>
-        <div>
-          <a href="{{ url_for('index')}}">Planify</a>
-        </div>
         <div class="log">
-          {% if user %}
-          <div class="greet">
-            <p>Hello, <a href="{{ url_for('profile') }}">{{ user.username }}</a>!</p>
-          </div>
-          <div class="logout">
-            <a href="{{ url_for('logout') }}">Log out</a>
-          </div>
-          {% else %}
-          <div class="login">
-            <a href="{{ url_for('login')}}">Login</a>
-          </div>
-          <div class="register">
-            <a href="{{ url_for('register')}}">Register</a>
-          </div>
-          {% endif %}
+          {% block head %}{% endblock %}
         </div>
       </div>
     </header>

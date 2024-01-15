@@ -137,8 +137,31 @@ def creation_menu(recettes,budget__max,nb_repas):
 def hello_world():
     return index()
 
-@app.route('/recipe/<int:recipeId>')
+@app.route('/recipe/<int:recipeId>',methods=['POST','GET'])
 def recipe(recipeId):
+    if request.method == "POST" and 'user' in session:
+        result = request.form.to_dict()
+        if 'fav' in result:
+            e = get_db().cursor()
+            e.execute("SELECT * FROM favori WHERE id_recette="+str(result['id_recette'])+" and id_user="+str(session['id']))
+            
+            if len(list(e)) == 0:
+                d = get_db().cursor()
+                d.execute("INSERT INTO favori (id_recette,id_user) VALUES ("+str(result['id_recette'])+","+str(session['id'])+")")
+                get_db().commit()
+                session['favori'].append(int(result['id_recette']))
+                session.modified = True
+
+        else :
+            d = get_db().cursor()
+            d.execute("DELETE FROM favori WHERE id_recette="+str(result['id_recette'])+" and id_user="+str(session['id']))
+            get_db().commit()
+            session['favori'].remove(int(result['id_recette']))
+            session.modified = True
+         
+         
+         
+         
     c = get_db().cursor()
     c.execute("SELECT * FROM recipes WHERE id="+str(recipeId))
     
@@ -320,13 +343,6 @@ def register():
         else:
             return render_template("register.html") 
 
-
-
-
-
-
-
-
 @app.route('/profil',methods=['POST','GET'])
 def profil():
     error = None
@@ -412,8 +428,7 @@ def choix():
             c = get_db().cursor() 
             c.execute("INSERT INTO info_utilisateur (id,"+insert[:-1]+") VALUES ("+str(session['id'])+","+value[:-1]+")")  
 
-        u_s = []
-        a_s = []
+        u_s,a_s = [],[]
         
         for elt in get_ustensiles():
             if elt in result:

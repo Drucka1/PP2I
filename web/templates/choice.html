@@ -1,12 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<body>
-    <a href="/profil" class="button">Profil</a><br><br>
+{% block title %}Your Choice{% endblock %}
+
+{% block head %}
+    <a href="/profil" class="button">Profil</a><br><br>   
+    <a href="/index" class="button">Menu</a>
+{% endblock %}
+
+
+{% block content %}
     <form action="/choix" method="post">
-        <label>Surname</label> : <input type="text" name="surname" value="{{ session['surname']}}"/>
-        <label>Forname</label> : <input type="text" name="forname" value="{{ session['forname'] }}"/>
-        <label>Sexe : </label>
+        <div><label>Forname</label> : <input type="text" name="forname" value="{{ session['forname'] }}"/></div>
+        <div><label>Surname</label> : <input type="text" name="surname" value="{{ session['surname']}}"/></div>
+        <div><label>Phone number</label> : <input type="tel" name="tel" value="{{ session['tel'] }}"/></div>
+        <div><label>Maximum budget per month</label> : <input type="number" min="0" name="budget" value="{{ session['budget'] }}"/></div>
+        <div><label>Sexe : </label>
         <select name="sexe" id="sexe">
         {% if session['sexe'] == 'Homme' %}
             <option value="Homme">Homme</option>
@@ -21,31 +29,25 @@
             <option value="Homme">Homme</option>
             <option value="Femme">Femme</option>
         {%endif%}   
-        </select>
-        <label>Maximum budget per month</label> : <input type="number" min="0" name="budget" value="{{ session['budget'] }}"/>
-        <label>Phone number</label> : <input type="tel" name="tel" value="{{ session['tel'] }}"/>
-
-        <br><br><br><div>Allergies ?</div><br>
-        
+        </select></div>
+    
+        <div>Any allergies ?</div>
         {% for elt in allergenes %}
             {% if elt in session['allergene'] %}
-                <input type="checkbox" name="{{elt}}" checked  /><label>{{elt}}</label>
+                <input type="checkbox" name="{{elt}}" checked/><label>{{elt}}</label>
             {% else %}
                 <input type="checkbox" name="{{elt}}"/><label>{{elt}}</label>
             {%endif%}
         {% endfor %}
 
-        <br><br><br><div>What utensils do you have?</div><br>
+        <div>What utensils do you have ?</div>
         {% for elt in ustensiles %}
             {% if elt in session['ustensile'] %}
-                <input type="checkbox" name="{{elt}}" checked /><label>{{elt}}</label>
+                <div><input type="checkbox" name="{{elt}}" checked/><label>{{elt}}</label></div>
             {% else %}
-                <input type="checkbox" name="{{elt}}"/><label>{{elt}}</label>
+                <div><input type="checkbox" name="{{elt}}"/><label>{{elt}}</label></div>
             {%endif%}
         {% endfor %}
-        <br><br><br>
-        
         <input type="submit" value="Valider" />
-    </form>
-
-</body>
+    </form> 
+{% endblock %}

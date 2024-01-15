@@ -1,19 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-    <body>
-        <a href="/index" class="button">Menu</a>
+{% block title %}Log In{% endblock %}
 
-        <center>{% if error%}
-            <p><strong>{{error}}</strong></p>
-        {% endif%}</center>
+{% block head %}
+    <a href="/index" class="button">Menu</a>
+{% endblock %}
 
-        <form action="/login" method="post">
-            <center><label>Username</label> : <input type="text" name="username" /></center>
-            <center><label>Password</label> : <input type="password" name="password" /></center>
-            <center><input type="submit" value="Log in" /></center>
-        </form>
-        <center><a href="/register" class="link">Don't have an account? Create one here</a></center>
-       
-    </body>
-</html>
+
+{% block content %}
+    <center>{% if error%}
+        <p><strong>{{error}}</strong></p>
+    {% endif%}</center>
+
+    <form action="/login" method="post">
+        <center><label>Username</label> : <input type="text" name="username" /></center>
+        <center><label>Password</label> : <input type="password" name="password" /></center>
+        <center><input type="submit" value="Log in" /></center>
+    </form>
+    <center><a href="/register" class="link">Don't have an account? Create one here</a></center>
+{% endblock %}
