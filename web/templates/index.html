@@ -2,7 +2,7 @@
 <html lang="en">
     <body> 
 
-        <p><strong>Bonjour
+        <p><strong>Hello
             {% if 'forname' in session %}
                 {{session['forname']|title}}
             {% elif 'user' in session %}
@@ -12,42 +12,51 @@
         <br>
 
         {% if 'user' in session %}
-            <a href="/logout" class="link">Deconnectez vous</a>
-            <a href="/profil" class="link">Votre profil</a>
+            <a href="/logout" class="link">Log out</a>
+            <a href="/profil" class="link">Your profile</a>
         {% else %}
-            <a href="/login" class="link">Connectez vous</a>
-            <a href="/register" class="link">S'inscrire</a>
+            <a href="/login" class="link">Log in</a>
+            <a href="/register" class="link">Register</a>
         {% endif %}
         <br><br>
 
-      
-        {% if recettes %}
-            <center>RECETTE DU MOMENT</center>
+        
+            <center>RECIPE OF THE MOMENT</center>
             <form action="/index" method="post">
-                <input type="text" name="nom_recette" /> <input type="submit" value="Rechercher" />
-            </form>
+                {% if search %}
+                    <input type="text" name="nom_recette" value="{{search}}"/> <input type="submit" value="Search" />
+                {% else %}
+                    <input type="text" name="nom_recette"/> <input type="submit" value="Search" />
+                {% endif %}
 
+            </form>
+        {% if recettes%}
             {% for elt in recettes%}
-                <div style="padding:10px 20px 20px;display: inline-table;"> 
+                <div style="padding:10px 20px 20px;display: inline-table;"  id="{{elt['id']}}"> 
                     <br><br>
                     <form action="/index" method="post">
+                        {% if search %}
+                            <input type="text" name="nom_recette" value="{{search}}" hidden/>
+                        {% endif %}
                         <input type="name" name="change_fav" on hidden/>
                         <input type="text" name="id_recette" value="{{elt['id']}}" hidden/>
                         {% if 'user' in session and elt['id'] in session['favori']%}
-                            <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favori</label> 
+                            <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favorite</label> 
                         {% else %}
-                            <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favori</label> 
+                            <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favorite</label> 
                         {% endif %}
                     </form>
                     <br>{{elt['nom']}}<br><br>
                     <img src="{{elt['image']}}" height="100" width="100">
                     <br><br>
                     {% for ingredient in elt['ingredient']%}
-                        - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
+                        {%if ingredient[1] != 0 %}    
+                           - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
+                        {%endif%}
                     {% endfor %}
                     <br>
                     <details>
-                        <summary>Details de la recette</summary><br>
+                        <summary>Recipe details</summary><br>
                         {% for instruction in elt['instruction']%}
                             - {{instruction}}<br><br>
                         {% endfor %}

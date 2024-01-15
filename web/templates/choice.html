@@ -4,8 +4,8 @@
 <body>
     <a href="/profil" class="button">Profil</a><br><br>
     <form action="/choix" method="post">
-        <label>Nom</label> : <input type="text" name="surname" value="{{ session['surname']}}"/>
-        <label>Prenom</label> : <input type="text" name="forname" value="{{ session['forname'] }}"/>
+        <label>Surname</label> : <input type="text" name="surname" value="{{ session['surname']}}"/>
+        <label>Forname</label> : <input type="text" name="forname" value="{{ session['forname'] }}"/>
         <label>Sexe : </label>
         <select name="sexe" id="sexe">
         {% if session['sexe'] == 'Homme' %}
@@ -22,10 +22,10 @@
             <option value="Femme">Femme</option>
         {%endif%}   
         </select>
-        <label>Budget maximum par mois</label> : <input type="number" min="0" name="budget" value="{{ session['budget'] }}"/>
-        <label>Numéro de téléphone</label> : <input type="tel" name="tel" value="{{ session['tel'] }}"/>
+        <label>Maximum budget per month</label> : <input type="number" min="0" name="budget" value="{{ session['budget'] }}"/>
+        <label>Phone number</label> : <input type="tel" name="tel" value="{{ session['tel'] }}"/>
 
-        <br><br><br><div>Des allergies ?</div><br>
+        <br><br><br><div>Allergies ?</div><br>
         
         {% for elt in allergenes %}
             {% if elt in session['allergene'] %}
@@ -35,7 +35,7 @@
             {%endif%}
         {% endfor %}
 
-        <br><br><br><div>Quelle ustensiles avez-vous?</div><br>
+        <br><br><br><div>What utensils do you have?</div><br>
         {% for elt in ustensiles %}
             {% if elt in session['ustensile'] %}
                 <input type="checkbox" name="{{elt}}" checked /><label>{{elt}}</label>

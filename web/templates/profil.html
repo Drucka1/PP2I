@@ -3,27 +3,24 @@
 
 <body>
     <a href="/index" class="button">Menu</a>
-    <a href="/choix" class="button">Modifier vos preference</a>
+    <a href="/choix" class="button">Change your preference</a>
     <p><strong>Bonjour
         {% if 'forname' in session %}
             {{session['forname']|title}}
         {% elif 'user' in session %}
             {{session['user']|title}}
         {% endif%}
-    </strong></p>
-    <br>
+    </strong></p><br>
 
     {% if 'allergene' in session %}
-        <p><strong>Mes allergies</strong></p>
+        <p><strong>My allergies</strong></p>
         {% for elt in session['allergene'] %}
             <div>{{elt}}</div>
         {% endfor %}
     {% endif%}
 
-    <br>
-
     {% if 'ustensile' in session %}
-        <p><strong>Mes ustensiles</strong></p>
+        <p><strong>My kitchen utensils</strong></p>
         {% for elt in session['ustensile'] %}
             <div>{{elt}}</div>
         {% endfor %}
@@ -32,20 +29,27 @@
     
     {% if 'favori' in session %}
         <section>
-        <p><strong>Mes recettes favoris</strong></p>
+        <p><strong>My favorite recipes</strong></p>
         {% for elt in recettes %}
             <div style="display: inline-table;"> 
+                <form action="/profil" method="post">
+                    <input type="name" name="change_fav" on hidden/>
+                    <input type="text" name="id_recette" value="{{elt['id']}}" hidden/>
+                    <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favorite</label> 
+                </form>
                 <center><label>{{elt['nom']}}</label>
                 <br><br>
                 <img src="{{elt['image']}}" height="100" width="100">
                 <br><br>
                 {% for ingredient in elt['ingredient']%}
-                    - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
+                    {%if ingredient[1] != 0 %}    
+                        - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
+                    {%endif%}
                 {% endfor %}
                 </center>
                 <br>
                 <details style="width :350px">
-                    <summary >Details de la recette</summary><br>
+                    <summary >Recipe details</summary><br>
                     {% for instruction in elt['instruction']%}
                         - {{instruction}}<br><br>
                     {% endfor %}
@@ -57,33 +61,35 @@
     
 
     {% if 'user' in session %}
-        <section>
-        <p><strong>Mes menus</strong></p>
-        
+        <p><strong>My personalized menus </strong></p>
+
         <form action="/profil" method="post">
-            <label>Nombres de repas</label> : <input type="number" min="1" name="nb_rec" required/>
-            <input type="submit" value="Envoyer" />
+            <label>Number of meals on the menu</label> : <input type="number" min="2" name="nb_rec" required/>
+            <input type="submit" value="Create" />
+            {% if error %}{{error}}{% endif %}
         </form>
         <br>
-
-        {% for elt in session['menu']%}
-            <div style="padding:10px 20px 20px;display: inline-table">
-                <label>{{elt['nom']}}</label>
-                <br><br>
-                <img src="{{elt['image']}}" height="100" width="100">
-                <br><br>
-                {% for ingredient in elt['ingredient']%}
-                    - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
-                {% endfor %}
-                <br>
-                <details style="width :350px">
-                    <summary >Details de la recette</summary><br>
-                    {% for instruction in elt['instruction']%}
-                        - {{instruction}}<br><br>
+            <section>
+            {% for elt in session['menu'] %}
+                <div style="padding:10px 20px 20px;display: inline-table" >
+                    <label>{{elt['nom']}}</label>
+                    <br><br>
+                    <img src="{{elt['image']}}" height="100" width="100">
+                    <br><br>
+                    {% for ingredient in elt['ingredient']%}
+                        {%if ingredient[1] != 0 %}    
+                            - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
+                        {%endif%}
                     {% endfor %}
-                </details>
-            </div>
-        {% endfor %}
-        </section>
+                    <br>
+                    <details style="width :350px">
+                        <summary >Recipe details</summary><br>
+                        {% for instruction in elt['instruction']%}
+                            - {{instruction}}<br><br>
+                        {% endfor %}
+                    </details>
+                </div>
+            {% endfor %}</section>
+        
     {% endif%}
 </body>
