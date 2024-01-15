@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
     <body> 
-
         <p><strong>Hello
             {% if 'forname' in session %}
                 {{session['forname']|title}}
@@ -21,15 +20,15 @@
         <br><br>
 
         
-            <center>RECIPE OF THE MOMENT</center>
-            <form action="/index" method="post">
-                {% if search %}
-                    <input type="text" name="nom_recette" value="{{search}}"/> <input type="submit" value="Search" />
-                {% else %}
-                    <input type="text" name="nom_recette"/> <input type="submit" value="Search" />
-                {% endif %}
+        <center>RECIPE OF THE MOMENT</center>
+        <form action="/index" method="post">
+            {% if search %}
+                <input type="text" name="nom_recette" value="{{search}}"/> <input type="submit" value="Search" />
+            {% else %}
+                <input type="text" name="nom_recette"/> <input type="submit" value="Search" />
+            {% endif %}
 
-            </form>
+        </form>
         {% if recettes%}
             {% for elt in recettes%}
                 <div style="padding:10px 20px 20px;display: inline-table;"  id="{{elt['id']}}"> 
@@ -46,25 +45,12 @@
                             <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favorite</label> 
                         {% endif %}
                     </form>
-                    <br>{{elt['nom']}}<br><br>
-                    <img src="{{elt['image']}}" loading="lazy" height="100" width="100">
+                    <br><a href="recipe/{{elt['id']}}">{{elt['nom']|title}}<br><br>
+                    <img src="{{elt['image']}}" loading="lazy" height="100" width="100"></a>
                     <br><br>
-                    {% for ingredient in elt['ingredient']%}
-                        {%if ingredient[1] != 0 %}    
-                           - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
-                        {%endif%}
-                    {% endfor %}
-                    <br>
-                    <details>
-                        <summary>Recipe details</summary><br>
-                        {% for instruction in elt['instruction']%}
-                            - {{instruction}}<br><br>
-                        {% endfor %}
-                    </details>
-                </div>
 
+                </div>
             {% endfor %}
         {% endif %}
-
     </body>
 </html>

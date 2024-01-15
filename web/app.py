@@ -109,6 +109,15 @@ def creation_menu(recettes,budget__max,nb_repas):
 def hello_world():
     return index()
 
+@app.route('/recipe/<int:recipeId>')
+def recipe(recipeId):
+    c = get_db().cursor()
+    c.execute("SELECT * FROM recipes WHERE id="+str(recipeId))
+    
+    recette = get_recette(c)
+    
+    return render_template('recipe.html',recette=recette[0])
+
 @app.route('/index',methods=['POST','GET'])
 def index():
     if request.method == "POST" and 'user' in session:

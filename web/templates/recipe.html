@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}{{recette['nom']}}{% endblock %}
+
+{% block content %}
+    <div style="display: inline-table;"> 
+        <center><label>{{recette['nom']}}</label>
+        <br><br>
+        <img src="{{recette['image']}}">
+        <br><br>
+        {% for ingredient in recette['ingredient']%}
+            {%if ingredient[1] != 0 %}    
+                - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
+            {%endif%}
+        {% endfor %}
+        </center>
+        <br>
+        <details style="width :350px">
+            <summary >Recipe details</summary><br>
+            {% for instruction in recette['instruction']%}
+                - {{instruction}}<br><br>
+            {% endfor %}
+        </details>
+    </div>
+{% endblock %}
