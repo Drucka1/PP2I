@@ -365,13 +365,18 @@ def profil():
         
             session['menu'] = get_toutes_recettes(d)
             
+            c = get_db().cursor()
+            c.execute("SELECT * FROM recipes JOIN favori ON recipes.id = favori.id_recette WHERE id_user ="+str(session['id']))
+            
+            return redirect(url_for("profil",_anchor="menu",recettes=get_toutes_recettes(c)))
+            
         else :
             error = "Veuillez renseigner un budget das votre profil"
         
     c = get_db().cursor()
     c.execute("SELECT * FROM recipes JOIN favori ON recipes.id = favori.id_recette WHERE id_user ="+str(session['id']))
     
-    return render_template("profil.html",recettes=get_toutes_recettes(c), error = error,)
+    return render_template("profil.html",recettes=get_toutes_recettes(c), error = error)
              
         
 @app.route('/choix',methods=['POST','GET'])
