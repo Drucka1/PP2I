@@ -22,7 +22,7 @@ def hash(string):
     hash_object.update(string.encode())
     return hash_object.hexdigest()
 
-def get_recette(cursor):  
+def get_toutes_recettes(cursor):  
     recettes = []
     
     for elt in list(cursor):
@@ -42,6 +42,34 @@ def get_recette(cursor):
                 
     return recettes
 
+def get_full_recette(cursor):  
+    
+    elt = list(cursor)[0]
+    dict_tmp = {}
+    dict_tmp['id'] = elt[0]
+    dict_tmp['nom'] = elt[1]
+    dict_tmp['image'] = elt[4]
+    c = get_db().cursor()
+    c.execute("SELECT name,amountdenom,unit FROM ingredient JOIN ingredients ON ingredients.id = ingredient.ingredientid WHERE recipeid='"+str(dict_tmp['id'])+"' ORDER BY line")
+    dict_tmp['ingredient'] = list(c)
+    d = get_db().cursor()
+    d.execute("SELECT txt FROM instruction WHERE recipeid='"+str(dict_tmp['id'])+"' ORDER BY line")
+    dict_tmp['instruction'] = [elt_[0] for elt_ in list(d) if elt_[0] != '']
+                
+    return dict_tmp
+
+def get_min_recettes(cursor):  
+    recettes = []
+    
+    for elt in list(cursor):
+        dict_tmp = {}
+        dict_tmp['id'] = elt[0]
+        dict_tmp['nom'] = elt[1]
+        dict_tmp['image'] = elt[4]
+        recettes.append(dict_tmp)
+               
+    return recettes
+
 def get_recette_realisable_user():
     def appartient_liste_liste(elt,liste_liste):
         for liste in liste_liste:
@@ -53,7 +81,7 @@ def get_recette_realisable_user():
     c = get_db().cursor()
     c.execute("SELECT * FROM recipes LIMIT 300")
     
-    recettes = get_recette(c)
+    recettes = get_toutes_recettes(c)
     
     for allergene in session['allergene']:
         for recette in recettes:
@@ -114,9 +142,7 @@ def recipe(recipeId):
     c = get_db().cursor()
     c.execute("SELECT * FROM recipes WHERE id="+str(recipeId))
     
-    recette = get_recette(c)
-    
-    return render_template('recipe.html',recette=recette[0])
+    return render_template('recipe.html',recette=get_full_recette(c))
 
 @app.route('/index',methods=['POST','GET'])
 def index():
@@ -144,13 +170,13 @@ def index():
             
             c = get_db().cursor()
             c.execute("SELECT * FROM recipes WHERE title LIKE '%"+str(result['nom_recette'])+"%'")
-            return render_template('index.html',search=str(result['nom_recette']),recettes=get_recette(c))
+            return render_template('index.html',search=str(result['nom_recette']),recettes=get_min_recettes(c))
         
         
         elif 'nom_recette' in result :
             c = get_db().cursor()
             c.execute("SELECT * FROM recipes WHERE title LIKE '%"+str(result['nom_recette'])+"%'")
-            return render_template('index.html',search=str(result['nom_recette']),recettes=get_recette(c))
+            return render_template('index.html',search=str(result['nom_recette']),recettes=get_min_recettes(c))
             
         elif 'change_fav' in result :
             
@@ -174,12 +200,12 @@ def index():
             
             
             c = get_db().cursor()
-            c.execute("SELECT * FROM recipes ")
-            return redirect(url_for('index',_anchor=str(result['id_recette']),recettes=get_recette(c)))
+            c.execute("SELECT * FROM recipes LIMIT 50")
+            return redirect(url_for('index',_anchor=str(result['id_recette']),recettes=get_min_recettes(c)))
         
     c = get_db().cursor()
-    c.execute("SELECT * FROM recipes")
-    return render_template('index.html', recettes = get_recette(c))
+    c.execute("SELECT * FROM recipes LIMIT 50")
+    return render_template('index.html', recettes = get_min_recettes(c))
 
 @app.route('/login',methods=['POST','GET'])
 def login():
@@ -337,7 +363,7 @@ def profil():
             d = get_db().cursor()
             d.execute("SELECT * FROM recipes WHERE id IN "+str(tuple(menu)))
         
-            session['menu'] = get_recette(d)
+            session['menu'] = get_toutes_recettes(d)
             
         else :
             error = "Veuillez renseigner un budget das votre profil"
@@ -345,7 +371,7 @@ def profil():
     c = get_db().cursor()
     c.execute("SELECT * FROM recipes JOIN favori ON recipes.id = favori.id_recette WHERE id_user ="+str(session['id']))
     
-    return render_template("profil.html",recettes=get_recette(c), error = error,)
+    return render_template("profil.html",recettes=get_toutes_recettes(c), error = error,)
              
         
 @app.route('/choix',methods=['POST','GET'])
