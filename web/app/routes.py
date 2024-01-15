@@ -79,7 +79,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)
+    session.clear()
     flash('You have been logged out.', 'success')
     return redirect(url_for('home'))
 
@@ -256,58 +256,6 @@ def planify():
                     recipe_plan.append(recipePlan[i])
 
             return render_template('planify_results.html', diet=diet, max_budget=max_budget, recipe_plan=recipe_plan)
-
-        #     try:
-        #         conn = get_db()
-        #         cursor = conn.cursor()
-        #
-        #         cursor.execute("""
-        #                        SELECT 
-        #                        r.title,
-        #                        r.imageURL,
-        #                        ig.name,
-        #                        ig.price,
-        #                        r.id
-        #                        FROM recipes as r 
-        #                        JOIN category as rc ON r.id = rc.recipeid 
-        #                        JOIN categories as c ON rc.categoryid = c.id 
-        #                        LEFT JOIN ingredient as i ON r.id = i.recipeid 
-        #                        LEFT JOIN ingredients as ig ON i.ingredientid = ig.id 
-        #                        WHERE c.name = ?
-        #                        """, (diet,))
-        #
-        #         rows = cursor.fetchall()  
-        #
-        #         if not rows:
-        #             return render_template('not_found.html', message='Recipe not found')
-        #         
-        #         recipeData = {
-        #             'title': rows[0][0],
-        #             'imageURL': rows[0][1],
-        #             'price': 0
-        #         }
-        #
-        #         for row in rows:
-        #             if row[2]:
-        #                 ingredient = {
-        #                     'name': row[2],
-        #                     'price': row[3]
-        #                 }
-        #                 recipeData['ingredients'].append(ingredient)
-        #
-        #             recipeData['ingredients'] = deleteOccurencesIngredients(recipeData['ingredients'])
-        #             recipeData['price'] = sum([ig.get('price') for ig in recipeData['ingredients']])
-        #         recipesId = deleteOccurences([row[4] for row in rows])
-        #
-        #         prices = []   
-        #
-        #         recipe_plan = knapsack(max_budget, recipes, prices)
-        #
-        #         return render_template('planify_results.html', diet=diet, max_budget=max_budget, recipe_plan=recipe_plan)
-        # 
-        #     except Exception as e:
-        #         print(f"Error: {e}")
-        #         return render_template('error.html')
 
         return render_template('planify.html')
 
