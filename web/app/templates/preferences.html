@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Preferences{% endblock %}
+
+{% block content %}
+<section class='preferences container'>
+  <section class="userOpt">
+    <form method="post">
+      <div class="input">
+        <label for="username">Username</label>
+        <input type="text" name="username" value="{{ user.username }}" required>
+      </div>
+      <div class="input">
+        <label for="email">Email</label>
+        <input type="email" name="email" value="{{ user.email }}" required>
+      </div>
+      <div class="input">
+        <label for="lastname">Lastname</label>
+        <input type="text" name="lastname" value="{{ user.lastname }}">
+      </div>
+      <div class="input">
+        <label for="firstname">Firstname</label>
+        <input type="text" name="firstname" value="{{ user.firstname }}">
+      </div>
+      <div class="input">
+        <label for="gender">Gender</label>
+        <select name="gender">
+          {% if user.gender %}
+            <option value="{{ user.gender }}" selected>{{ user.gender }}</option>
+          {% else %}
+            <option value="" selected disabled>Please select one...</option>
+          {% endif %}
+          <option value="Female">Female</option>
+          <option value="Male">Male</option>
+          <option value="Non-binary">Non-Binary</option>
+          <option value="Other">Other</option>
+          <option value="Prefer not to answer">Prefer not to Answer</option>
+        </select>
+      </div>
+      <div class="input">
+        <label for="budget">Budget</label>
+        <input type="text" name="budget" value="{{ user.budget }}">
+      </div>
+      <button type="submit">Submit Modifications</button>
+    </form> 
+  </section>    
+</section>
+{% endblock %}
