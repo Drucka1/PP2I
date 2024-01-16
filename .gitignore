@@ -1,3 +1,2 @@
 web/.venv
 web/app/__pycache__
-web/instance/user.db
