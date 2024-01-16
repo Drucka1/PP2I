@@ -269,18 +269,18 @@ def index():
 def download():
     if request.method == "POST" and 'user' in session :
         result= request.form.to_dict()
-        fichier = open("static/data.txt", "w")
+        fichier = open("static/list_of_ingredient.txt", "w")
         fichier.close()
         
-        fichier = open("static/data.txt", "a")
+        fichier = open("static/list_of_ingredient.txt", "a")
         liste_ing = result['ing_list'].split('|')
         fichier.write("List of ingredient \n\n")
         
         for elt in liste_ing:
             fichier.write(elt+"\n")
         fichier.close()
-        tmp=send_file('static/data.txt' , as_attachment=True)
-        os.remove('static/data.txt')
+        tmp=send_file('static/list_of_ingredient.txt' , as_attachment=True)
+        os.remove('static/list_of_ingredient.txt')
         return tmp
     
     return redirect('planify.html')
