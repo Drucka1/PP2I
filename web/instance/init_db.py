@@ -1,31 +1,26 @@
 import sqlite3
 import os
 
-def execute_sql_command(sql_command, db_path='instance/site.db'):
-    # Connect to the SQLite database
+def execute_sql_command(sql_command, db_path='site.db'):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # Execute the SQL command
     cursor.executescript(sql_command)
 
-    # Commit the transaction and close the connection
     conn.commit()
     conn.close()
 
 def init_db():
-    # Load SQL files
-    sql_folder = os.path.join('instance', 'sqlFiles')
+    sql_folder = os.path.join('sql_files')
 
-    # Execute user.sql
     with open(os.path.join(sql_folder, 'user.sql'), 'r') as file:
         sql_command_user = file.read()
         execute_sql_command(sql_command_user)
 
-    # Execute food.sql
-    with open(os.path.join(sql_folder, 'randomPrices.sql'), 'r') as file:
+    with open(os.path.join(sql_folder, 'random_prices.sql'), 'r') as file:
         sql_command_food = file.read()
         execute_sql_command(sql_command_food)
 
 if __name__ == '__main__':
     init_db()
+
