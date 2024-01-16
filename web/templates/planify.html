@@ -40,18 +40,21 @@
     <ul>
         {% for recipe in recipe_plan %}
             <li>
-                {{ recipe.title }}
-                <img src="{{ recipe.imageURL }}" alt="{{ recipe.title }}">{{ recipe.price }}
+                <a href="recipe/{{recipe['id']}}"> {{ recipe.title }}<img src="{{ recipe['imageURL'] }}" alt="{{ recipe.title }}"></a> {{ recipe.price }}
             </li>
         {% endfor %}
-    </ul>
+    </ul> 
     <h3>List of ingredients</h3>
-    {% for recipe in recipe_plan %}
-        {% for ingredient in recipe['ingredients'] %}
-                {{ingredient[0]}} {{ingredient[2]}} {{ingredient[3]}} : {{ingredient[1]}}$<br>
+    <form action="/download" method="post">
+        <input type="text" name="ing_list" value="{% for recipe in recipe_plan %}{% for ingredient in recipe['ingredients'] %}- {{ingredient[0]}} {{ingredient[2]}} {{ingredient[3]}} : {{ingredient[1]}}$|{%endfor %}{% endfor %}" hidden/>
+        {% for recipe in recipe_plan %}
+            {% for ingredient in recipe['ingredients'] %}
+                - {{ingredient[0]}} {{ingredient[2]}} {{ingredient[3]}} : {{ingredient[1]}}$<br>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
-
+        
+        <input type="submit" value="Download" />
+    </form>
     {%endif%}
 
 {% endblock %}

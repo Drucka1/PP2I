@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, render_template, request, redirect, session, url_for,send_file
 from flask import g
 from random import sample,shuffle
-import sqlite3,hashlib,random
+import sqlite3,hashlib,random,os
 
 app = Flask(__name__)
 
@@ -130,7 +130,45 @@ def creation_menu(recettes,budget__max,nb_repas):
         return []
     return rec([],0,recette_melange)
 
+def knapsack(maxBudget, recipes, prices, favori):
+    memo = {}
+    def currentPrice(recipes: list, prices: list):
+        return sum([prices[i] if recipe else 0 for i, recipe in enumerate(recipes)])
+
+    def addRecipe(currentRecipes: list, index: int):
+        return [1 if i == index else recipe for i, recipe in enumerate(currentRecipes)]
+
+    def solve(depth: int, maxBudget:int, recipes: list, prices: list):
+        if depth < 0:
+            return recipes
+
+        if (depth, maxBudget) in memo:
+            return memo[(depth, maxBudget)]
+
+        takeBudget = maxBudget - prices[depth]
+        noTake = solve(depth - 1, maxBudget, recipes, prices) 
+        noTakePrice = currentPrice(noTake, prices)
+        if 0 <= takeBudget:
+            takeRecipes = addRecipe(recipes, depth)
+            take = solve(depth - 1, takeBudget, takeRecipes, prices)
+            takePrice = currentPrice(take, prices)
+
+            if noTakePrice <= takePrice:
+                result = take
+            else:
+                result = noTake
+        else:
+            result = noTake
+
+        memo[(depth, maxBudget)] = result
+        return result
+
+    maxDepth = len(recipes) - 1
+    budget = maxBudget - currentPrice(recipes, prices)
+    return solve(maxDepth, budget, recipes, prices)
+
 #_______________________________________________ROUTES_________________________________________________________
+
 @app.route('/')
 def hello_world():
     return index()
@@ -156,9 +194,6 @@ def recipe(recipeId):
             get_db().commit()
             session['favori'].remove(int(result['id_recette']))
             session.modified = True
-         
-         
-         
          
     c = get_db().cursor()
     c.execute("SELECT * FROM recipes WHERE id="+str(recipeId))
@@ -220,16 +255,36 @@ def index():
                 session.modified = True
                         
             c = get_db().cursor()
-            c.execute("SELECT * FROM recipes")
+            c.execute("SELECT * FROM recipes LIMIT 200")
             return redirect(url_for('index',_anchor=str(result['id_recette']),recettes=get_min_recettes(c)))
     
     elif request.method == "POST" and 'user' not in session:
         return render_template("/login.html",error="You must log in to add your favorite dishes")
     
     c = get_db().cursor()
-    c.execute("SELECT * FROM recipes")
+    c.execute("SELECT * FROM recipes LIMIT 200")
     return render_template('index.html', recettes = get_min_recettes(c))
 
+@app.route('/download',methods=['POST','GET'])
+def download():
+    if request.method == "POST" and 'user' in session :
+        result= request.form.to_dict()
+        fichier = open("static/data.txt", "w")
+        fichier.close()
+        
+        fichier = open("static/data.txt", "a")
+        liste_ing = result['ing_list'].split('|')
+        fichier.write("List of ingredient \n\n")
+        
+        for elt in liste_ing:
+            fichier.write(elt+"\n")
+        fichier.close()
+        tmp=send_file('static/data.txt' , as_attachment=True)
+        os.remove('static/data.txt')
+        return tmp
+    
+    return redirect('planify.html')
+  
 @app.route('/login',methods=['POST','GET'])
 def login():
     if request.method == "POST":
@@ -257,7 +312,7 @@ def login():
             session['allergene']=[elt[0] for elt in list(c)]
             session['favori']=[elt[0] for elt in list(f)] 
             session['menus']=[]
-            
+                        
             e = get_db().cursor()
             e.execute("SELECT * FROM info_utilisateur WHERE id="+str(session['id']))
             tmp = list(e)
@@ -580,44 +635,6 @@ def planify():
         c.execute("SELECT diet,budget FROM menu_details WHERE id_user="+str(session['id']))
         diet,budget = list(c)[0]
         
-        
         return render_template("/planify.html",diet=diet, max_budget=budget,recipe_plan=recipePlan)
     else: 
         return render_template("/planify.html",error="You need to log in to planify your meals")
-    
-def knapsack(maxBudget, recipes, prices, favori):
-    memo = {}
-    def currentPrice(recipes: list, prices: list):
-        return sum([prices[i] if recipe else 0 for i, recipe in enumerate(recipes)])
-
-    def addRecipe(currentRecipes: list, index: int):
-        return [1 if i == index else recipe for i, recipe in enumerate(currentRecipes)]
-
-    def solve(depth: int, maxBudget:int, recipes: list, prices: list):
-        if depth < 0:
-            return recipes
-
-        if (depth, maxBudget) in memo:
-            return memo[(depth, maxBudget)]
-
-        takeBudget = maxBudget - prices[depth]
-        noTake = solve(depth - 1, maxBudget, recipes, prices) 
-        noTakePrice = currentPrice(noTake, prices)
-        if 0 <= takeBudget:
-            takeRecipes = addRecipe(recipes, depth)
-            take = solve(depth - 1, takeBudget, takeRecipes, prices)
-            takePrice = currentPrice(take, prices)
-
-            if noTakePrice <= takePrice:
-                result = take
-            else:
-                result = noTake
-        else:
-            result = noTake
-
-        memo[(depth, maxBudget)] = result
-        return result
-
-    maxDepth = len(recipes) - 1
-    budget = maxBudget - currentPrice(recipes, prices)
-    return solve(maxDepth, budget, recipes, prices)
