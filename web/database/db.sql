@@ -41,6 +41,21 @@ CREATE TABLE user_allergene (
     PRIMARY KEY (user_id, allergene_nom)
 );
 
+CREATE TABLE menu (
+    id_recette INTEGER NOT NULL,
+    id_user INTEGER NOT NULL,
+    FOREIGN KEY (id_recette) REFERENCES recipes (id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (id_user) REFERENCES utilisateurs (id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    PRIMARY KEY (id_recette,id_user)
+);
+
+CREATE TABLE menu_details (
+    diet VARCHAR(64) NOT NULL,
+    budget INTEGER NOT NULL,
+    id_user INTEGER NOT NULL PRIMARY KEY,
+    FOREIGN KEY (id_user) REFERENCES utilisateurs (id) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 CREATE TABLE favori (
     id_recette INTEGER NOT NULL,
     id_user INTEGER NOT NULL,

@@ -11,38 +11,48 @@
     <a href="/choix" class="link">Change your preference</a>
 {% endblock %}
 
-
 {% block content %}
-    {% if 'user' in session %}
-        <p><strong>My personalized menus </strong></p>
+    <h2>Planify Your Meals</h2>
 
-        <form action="/profil" method="post">
-            <div class="input"><label>Number of meals on the menu : </label><input type="number" min="2" name="nb_rec" required/></div>
-            <input type="submit" value="Create" />
-            {% if error %}{{error}}{% endif %}
-        </form>
-        <br>
-            <section>
-            {% for elt in session['menu'] %}
-                <div>
-                    <label>{{elt['nom']}}</label>
-                    <br><br>
-                    <img src="{{elt['image']}}">
-                    <br><br>
-                    {% for ingredient in elt['ingredient']%}
-                        {%if ingredient[1] != 0 %}    
-                            - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
-                        {%endif%}
-                    {% endfor %}
-                    <br>
-                    <details>
-                        <summary >Recipe details</summary><br>
-                        {% for instruction in elt['instruction']%}
-                            - {{instruction}}<br><br>
-                        {% endfor %}
-                    </details>
-                </div>
-            {% endfor %}
-            </section>  
-    {% endif%}
-{% endblock %}  
+    {% if error %}{{error}}{%endif%}
+
+    <form method="post" action="{{ url_for('planify') }}">
+        <label for="diet">Select diet:</label>
+        <select id="diet" name="diet">
+        <!-- Options for diet -->
+        <option value="Vegetarian">Vegetarian</option>
+        <option value="Vegan">Vegan</option>
+        <!-- Add more options as needed -->
+        </select>
+
+        <label for="max_budget">Maximum Budget:</label>
+        <input type="number" id="max_budget" name="max_budget" value="{{session['budget']}}" min="0" required>
+
+        <button type="submit">Generate Plan</button>
+    </form>
+
+    {% if recipe_plan%}
+
+    <p>Your Selected Diet: {{ diet }}</p>
+    <p>Your Maximum Budget: ${{ max_budget }}</p>
+
+    <h3>Recommended Recipe Plan:</h3>
+    <ul>
+        {% for recipe in recipe_plan %}
+            <li>
+                {{ recipe.title }}
+                <img src="{{ recipe.imageURL }}" alt="{{ recipe.title }}">{{ recipe.price }}
+            </li>
+        {% endfor %}
+    </ul>
+    <h3>List of ingredients</h3>
+    {% for recipe in recipe_plan %}
+        {% for ingredient in recipe['ingredients'] %}
+                {{ingredient[0]}} {{ingredient[2]}} {{ingredient[3]}} : {{ingredient[1]}}$<br>
+        {% endfor %}
+    {% endfor %}
+
+    {%endif%}
+
+{% endblock %}
+

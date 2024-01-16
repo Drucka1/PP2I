@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask import g
-from random import sample
-import sqlite3
-import hashlib
+from random import sample,shuffle
+import sqlite3,hashlib,random
 
 app = Flask(__name__)
 
@@ -167,7 +166,7 @@ def recipe(recipeId):
     return render_template('recipe.html',recette=get_full_recette(c))
 
 @app.route('/index',methods=['POST','GET'])
-def index():
+def index():    
     if request.method == "POST" and 'user' in session:
         result = request.form.to_dict()
         if 'nom_recette' in result and 'change_fav' in result :
@@ -219,14 +218,16 @@ def index():
                 get_db().commit()
                 session['favori'].remove(int(result['id_recette']))
                 session.modified = True
-            
-            
+                        
             c = get_db().cursor()
-            c.execute("SELECT * FROM recipes LIMIT 50")
+            c.execute("SELECT * FROM recipes")
             return redirect(url_for('index',_anchor=str(result['id_recette']),recettes=get_min_recettes(c)))
-        
+    
+    elif request.method == "POST" and 'user' not in session:
+        return render_template("/login.html",error="You must log in to add your favorite dishes")
+    
     c = get_db().cursor()
-    c.execute("SELECT * FROM recipes LIMIT 50")
+    c.execute("SELECT * FROM recipes")
     return render_template('index.html', recettes = get_min_recettes(c))
 
 @app.route('/login',methods=['POST','GET'])
@@ -449,3 +450,174 @@ def choix():
             return redirect('/index')
         else:
             return render_template("choice.html",allergenes=get_allergenes(),ustensiles=get_ustensiles() )
+
+@app.route('/planify',methods=['POST','GET'])
+def planify(): 
+    
+    if 'user' in session and request.method == 'POST':
+        result = request.form.to_dict()
+        diet = result['diet']
+        max_budget = int(result['max_budget'])
+        
+        c = get_db().cursor()
+        c.execute("DELETE FROM menu_details WHERE id_user="+str(session['id']))
+        get_db().commit()
+        c = get_db().cursor()
+        c.execute("INSERT INTO menu_details (id_user,diet,budget) VALUES ("+str(session['id'])+",'"+str(diet)+"',"+str(max_budget)+")")
+        get_db().commit()
+        
+        recette_realisable = get_recette_realisable_user()
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT r.title, r.imageURL, r.id FROM recipes as r JOIN category as rc ON r.id = rc.recipeid  JOIN categories as c ON rc.categoryid = c.id WHERE c.name = '"+str(diet)+"' AND r.id IN"+str(tuple(recette_realisable)))
+
+        recipeFound = cursor.fetchall()  
+
+        if not recipeFound:
+            return render_template('not_found.html', message='Recipe not found')
+
+        recipePlan = []
+
+        recipes = [0]*len(recipeFound)
+        recipePrice = []
+        
+        for recipe in recipeFound:
+
+            recipeData = {
+                'title': recipe[0],
+                'imageURL': recipe[1],
+                'id': recipe[2],
+                'ingredients': [],
+                'price': 0,
+
+            }
+            cursor.execute("""
+                SELECT i.name, i.price, ig.amountdenom,ig.unit
+                FROM ingredients as i
+                JOIN ingredient as ig ON i.id = ig.ingredientid 
+                WHERE ig.recipeid = ?
+            """, (recipeData['id'],))
+
+            ingredients = cursor.fetchall()
+
+            recipeData['ingredients'] = ingredients
+
+            recipeData['price'] = int(sum([item[1] for item in ingredients]))
+
+            recipePlan.append(recipeData)
+            recipePrice.append(recipeData['price'])
+            
+        favori_shuffle = session['favori'].copy()
+        random.shuffle(favori_shuffle)
+        class Fav( Exception ):
+            pass
+        
+        try :
+            for i in range(len(recipeFound)):
+                for id_fav in favori_shuffle :
+                    if recipeFound[i][2] == id_fav and recipePrice[i] <= max_budget:
+                        recipes[i] = 1
+                        raise Fav
+        except Fav:
+            pass   
+         
+        recipes = knapsack(max_budget, recipes, recipePrice,session['favori'])
+
+        recipe_plan = []
+        
+        c = get_db().cursor()
+        c.execute("DELETE FROM menu WHERE id_user="+str(session['id']))
+        get_db().commit()
+
+        for i, takeRecipe in enumerate(recipes):
+            if takeRecipe:
+                recipe_plan.append(recipePlan[i])
+                c = get_db().cursor()
+                c.execute("INSERT INTO menu (id_user,id_recette) VALUES ("+str(session['id'])+","+str(recipePlan[i]['id'])+")")
+                get_db().commit()
+            
+        return render_template('planify.html', diet=diet, max_budget=max_budget, recipe_plan=recipe_plan)
+
+    elif 'user' in session :
+        cursor = get_db().cursor()
+        cursor.execute("SELECT r.title, r.imageURL, r.id FROM menu JOIN recipes as r ON r.id = menu.id_recette WHERE id_user="+str(session['id']))
+
+        recipeFound = cursor.fetchall()  
+
+        if not recipeFound:
+            return render_template('not_found.html', message='Recipe not found')
+
+        recipePlan = []
+        
+        for recipe in recipeFound:
+
+            recipeData = {
+                'title': recipe[0],
+                'imageURL': recipe[1],
+                'id': recipe[2],
+                'ingredients': [],
+                'price': 0,
+
+            }
+            cursor.execute("""
+                SELECT i.name, i.price,ig.amountdenom,ig.unit
+                FROM ingredients as i
+                JOIN ingredient as ig ON i.id = ig.ingredientid 
+                WHERE ig.recipeid = ?
+            """, (recipeData['id'],))
+
+            ingredients = cursor.fetchall()
+
+            recipeData['ingredients'] = ingredients
+
+            recipeData['price'] = int(sum([item[1] for item in ingredients]))
+
+            recipePlan.append(recipeData)  
+            
+        c = get_db().cursor()
+        c.execute("SELECT diet,budget FROM menu_details WHERE id_user="+str(session['id']))
+        diet,budget = list(c)[0]
+        
+        
+        return render_template("/planify.html",diet=diet, max_budget=budget,recipe_plan=recipePlan)
+    else: 
+        return render_template("/planify.html",error="You need to log in to planify your meals")
+    
+def knapsack(maxBudget, recipes, prices, favori):
+    memo = {}
+    def currentPrice(recipes: list, prices: list):
+        return sum([prices[i] if recipe else 0 for i, recipe in enumerate(recipes)])
+
+    def addRecipe(currentRecipes: list, index: int):
+        return [1 if i == index else recipe for i, recipe in enumerate(currentRecipes)]
+
+    def solve(depth: int, maxBudget:int, recipes: list, prices: list):
+        if depth < 0:
+            return recipes
+
+        if (depth, maxBudget) in memo:
+            return memo[(depth, maxBudget)]
+
+        takeBudget = maxBudget - prices[depth]
+        noTake = solve(depth - 1, maxBudget, recipes, prices) 
+        noTakePrice = currentPrice(noTake, prices)
+        if 0 <= takeBudget:
+            takeRecipes = addRecipe(recipes, depth)
+            take = solve(depth - 1, takeBudget, takeRecipes, prices)
+            takePrice = currentPrice(take, prices)
+
+            if noTakePrice <= takePrice:
+                result = take
+            else:
+                result = noTake
+        else:
+            result = noTake
+
+        memo[(depth, maxBudget)] = result
+        return result
+
+    maxDepth = len(recipes) - 1
+    budget = maxBudget - currentPrice(recipes, prices)
+    return solve(maxDepth, budget, recipes, prices)
