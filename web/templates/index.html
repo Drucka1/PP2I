@@ -21,7 +21,7 @@
         {% endif%}
     </strong></p>
   
-    <center>RECIPE OF THE MOMENT</center>
+    RECIPE OF THE MOMENT
     <form action="/index" method="post">
         {% if search %}
             <input type="text" name="nom_recette" value="{{search}}"/> <input type="submit" value="Search" />
@@ -32,7 +32,7 @@
     </form>
     {% if recettes%}
         {% for elt in recettes%}
-            <div style="padding:10px 20px 20px;display: inline-table;"  id="{{elt['id']}}"> 
+            <div id="{{elt['id']}}"> 
                 <br><br>
                 <form action="/index" method="post">
                     {% if search %}

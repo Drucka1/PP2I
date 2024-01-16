@@ -4,15 +4,14 @@
 {% block title %}Register{% endblock %}
 
 {% block head %}    
-    <a href="/index" class="button">Menu</a>
+    <a href="/index" class="link">Menu</a>
 {% endblock %}
 
 {% block content %}
-
     <h2>Register</h2>
-    <center>{% if error%}
+    {% if error%}
         <p><strong>{{error}}</strong></p>
-        {% endif%}</center>
+        {% endif%}
     <form action="/register" method="post">
         <div class="input">
             <label for="username">Username:</label>
@@ -30,7 +29,7 @@
             <label for="confirmPassword">Confirm password:</label>
             <input type="password" name="password_retype" required>
         </div>
-        <p>Already have an account? <a href="/login" class="link">Sign in here</a>.</p><br><br>
+        <p>Already have an account? <a href="/login" class="link2">Sign in here</a>.</p><br><br>
         <button type="submit" value="Validate">Register</button>
     </form>
 {% endblock %}

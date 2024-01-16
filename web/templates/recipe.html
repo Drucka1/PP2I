@@ -15,7 +15,7 @@
 
 
 {% block content %}
-    <div style="display: inline-table;"> 
+    <div> 
         <form action="/recipe/{{recette['id']}}" method="post">
             <input type="text" name="id_recette" value="{{recette['id']}}" hidden/>
             {% if 'user' in session and recette['id'] in session['favori']%}
@@ -24,7 +24,7 @@
                 <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favorite</label> 
             {% endif %}
         </form>
-        <center><label>{{recette['nom']}}</label>
+        <label>{{recette['nom']}}</label>
         <br><br>
         <img src="{{recette['image']}}">
         <br><br>
@@ -33,9 +33,8 @@
                 - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
             {%endif%}
         {% endfor %}
-        </center>
         <br>
-        <details style="width :350px">
+        <details>
             <summary >Recipe details</summary><br>
             {% for instruction in recette['instruction']%}
                 - {{instruction}}<br><br>

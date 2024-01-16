@@ -132,7 +132,6 @@ def creation_menu(recettes,budget__max,nb_repas):
     return rec([],0,recette_melange)
 
 #_______________________________________________ROUTES_________________________________________________________
-
 @app.route('/')
 def hello_world():
     return index()
@@ -270,7 +269,7 @@ def login():
                    
             return redirect('/index')
         else : 
-            return render_template('login.html',error='Mdp ou username incorrect')
+            return render_template('login.html',error='Incorrect password or username')
     else: 
         if 'user' in session:
             return redirect("/index")   
@@ -295,23 +294,23 @@ def register():
         c = get_db().cursor()
         c.execute("select email,username from utilisateurs where email = '"+em+"' and username = '"+un+"'")
         if len(c.fetchall()) != 0 :
-            error = "Vous avez deja un compte"
+            error = "You already have an account"
         
         c = get_db().cursor()
         c.execute("select username from utilisateurs where username = '"+un+"'")
         if len(c.fetchall()) != 0 and un != '':
-            error = "Username deja pris"
+            error = "Username already taken"
         
         c = get_db().cursor()
         c.execute("select email from utilisateurs where email = '"+em+"'")
         if len(c.fetchall()) != 0 and em != '':
-            error = "Probleme d'email"
+            error = "The email is already linked to an account "
     
         if pw != pwrt:
-            error = "Mot de passe different"
+            error = "Different passwords"
             
-        if pw == '':
-            error = "Veuillez saisir un mdp"
+        if pw == '' or pwrt == '':
+            error = "Please enter a password"
             
         if error != None:
             return render_template('register.html',error=error)
@@ -387,7 +386,7 @@ def profil():
             return redirect(url_for("profil",_anchor="menu",recettes=get_toutes_recettes(c)))
             
         else :
-            error = "Veuillez renseigner un budget das votre profil"
+            error = "Please enter a budget in your profile"
         
     c = get_db().cursor()
     c.execute("SELECT * FROM recipes JOIN favori ON recipes.id = favori.id_recette WHERE id_user ="+str(session['id']))

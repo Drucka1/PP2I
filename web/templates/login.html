@@ -3,19 +3,20 @@
 {% block title %}Log In{% endblock %}
 
 {% block head %}
-    <a href="/index" class="button">Menu</a>
+    <a href="/index" class="link">Menu</a>
 {% endblock %}
 
 
 {% block content %}
-    <center>{% if error%}
+    {% if error%}
         <p><strong>{{error}}</strong></p>
-    {% endif%}</center>
+    {% endif%}
 
     <form action="/login" method="post">
-        <center><label>Username</label> : <input type="text" name="username" /></center>
-        <center><label>Password</label> : <input type="password" name="password" /></center>
-        <center><input type="submit" value="Log in" /></center>
+        <div class="input"><label>Username : </label><input type="text" name="username" /></div>
+        <div class="input"><label>Password : </label><input type="password" name="password" /></div>
+        <input type="submit" value="Log in" />
+        
     </form>
-    <center><a href="/register" class="link">Don't have an account? Create one here</a></center>
+    Don't have an account? <a href="/register" class="link2">Create one here</a>
 {% endblock %}

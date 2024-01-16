@@ -7,8 +7,8 @@
    /* Colors */
   --color1: #94E8B4;
   --color2: #72BDA3;
-  --color3: #5E8C61;
-  --color4: #4E6151;
+  --color3: #4E6151;
+  --color4: rgb(163, 218, 163);
   --color5: #3B322C;
 }
 
@@ -19,6 +19,15 @@
 
 a {
   text-decoration: none;
+  color:black;
+}
+
+.link {
+  color:white;
+}
+
+.link2 {
+  color:blue;
 }
 
 .title {
