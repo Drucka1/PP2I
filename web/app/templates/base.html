@@ -9,11 +9,12 @@
 <body>
     <header>
       <div class="container">
-        <div>
+        <div class="header-left">
           <h2>
-          <img src="/static/logo.jpg" href="{{ url_for('index') }}" style="height:75px; width:75px" >
-          <a href="{{ url_for('index') }}"><f style="color:white">WhaTNeat</f></a>
-          
+            <a href="{{ url_for('home') }}">
+              <img src="/static/logo.jpg" href="{{ url_for('home') }}" class="logo">
+              WhaTNeat
+            </a>
           </h2>
         </div>
         <div class="log">
@@ -29,7 +30,6 @@
     </main>
 
     <footer>
-        <!-- Add footer content here -->
     </footer>
 </body>
 </html>
