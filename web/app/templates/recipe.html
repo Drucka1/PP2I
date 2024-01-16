@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}{{recette['nom']}}{% endblock %}
+
+{% block head %}
+    {% if 'user' in session %}
+        <a href="/logout" class="link">Log out</a>
+        <a href="/profil" class="link">Your profile</a>
+    {% else %}
+        <a href="/login" class="link">Log in</a>
+        <a href="/register" class="link">Register</a>
+    {% endif %}
+    <a href="/index" class="button">Menu</a>
+{% endblock %}
+
+
+{% block content %}
+    <div> 
+        <form action="/recipe/{{recette['id']}}" method="post">
+            <input type="text" name="id_recette" value="{{recette['id']}}" hidden/>
+            {% if 'user' in session and recette['id'] in session['favori']%}
+                <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favorite</label> 
+            {% else %}
+                <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favorite</label> 
+            {% endif %}
+        </form>
+        <label>{{recette['nom']}}</label>
+        <br><br>
+        <img src="{{recette['image']}}">
+        <br><br>
+        {% for ingredient in recette['ingredient']%}
+            {%if ingredient[1] != 0 %}    
+                - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
+            {%endif%}
+        {% endfor %}
+        <br>
+        <details>
+            <summary >Recipe details</summary><br>
+            {% for instruction in recette['instruction']%}
+                - {{instruction}}<br><br>
+            {% endfor %}
+        </details>
+    </div>
+{% endblock %}

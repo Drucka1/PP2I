@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Index{% endblock %}
+
+{% block head %}
+    {% if 'user' in session %}
+        <a href="/logout" class="link">Log out</a>
+        <a href="/profil" class="link">Your profile</a>
+    {% else %}
+        <a href="/login" class="link">Log in</a>
+        <a href="/register" class="link">Register</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <p><strong>Hello
+        {% if 'forname' in session %}
+            {{session['forname']|title}}
+        {% elif 'user' in session %}
+            {{session['user']|title}}
+        {% endif%}
+    </strong></p>
+  
+    RECIPE OF THE MOMENT
+    <form action="/index" method="post">
+        {% if search %}
+            <input type="text" name="nom_recette" value="{{search}}"/> <input type="submit" value="Search" />
+        {% else %}
+            <input type="text" name="nom_recette"/> <input type="submit" value="Search" />
+        {% endif %}
+
+    </form>
+    {% if recettes%}
+        {% for elt in recettes%}
+            <div id="{{elt['id']}}"> 
+                <br><br>
+                <form action="/index" method="post">
+                    {% if search %}
+                        <input type="text" name="nom_recette" value="{{search}}" hidden/>
+                    {% endif %}
+                    <input type="name" name="change_fav" on hidden/>
+                    <input type="text" name="id_recette" value="{{elt['id']}}" hidden/>
+                    {% if 'user' in session and elt['id'] in session['favori']%}
+                        <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favorite</label> 
+                    {% else %}
+                        <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favorite</label> 
+                    {% endif %}
+                </form>
+                <br><h2><a href="recipe/{{elt['id']}}">{{elt['nom']|title}}</h2><br><br>
+                <img src="{{elt['image']}}" loading="lazy"></a>
+                <br><br>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

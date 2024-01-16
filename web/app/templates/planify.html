@@ -1,0 +1,48 @@
+<!-- app/templates/profile.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+
+{% block head %}    
+    <a href="/index" class="link">Menu</a>
+    <a href="/logout" class="link">Log out</a>
+    <a href="/choix" class="link">Change your preference</a>
+{% endblock %}
+
+
+{% block content %}
+    {% if 'user' in session %}
+        <p><strong>My personalized menus </strong></p>
+
+        <form action="/profil" method="post">
+            <div class="input"><label>Number of meals on the menu : </label><input type="number" min="2" name="nb_rec" required/></div>
+            <input type="submit" value="Create" />
+            {% if error %}{{error}}{% endif %}
+        </form>
+        <br>
+            <section>
+            {% for elt in session['menu'] %}
+                <div>
+                    <label>{{elt['nom']}}</label>
+                    <br><br>
+                    <img src="{{elt['image']}}">
+                    <br><br>
+                    {% for ingredient in elt['ingredient']%}
+                        {%if ingredient[1] != 0 %}    
+                            - {{ingredient[0]}} : {{ingredient[1]}} {{ingredient[2]}}<br>
+                        {%endif%}
+                    {% endfor %}
+                    <br>
+                    <details>
+                        <summary >Recipe details</summary><br>
+                        {% for instruction in elt['instruction']%}
+                            - {{instruction}}<br><br>
+                        {% endfor %}
+                    </details>
+                </div>
+            {% endfor %}
+            </section>  
+    {% endif%}
+{% endblock %}  
