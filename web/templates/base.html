@@ -7,20 +7,38 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <header>
-      <div class="container">
-        <div>
+  <header>
+    <div class="container">
+        <a href="{{ url_for('index') }}" class="header-left">
+          <img src="/static/logo.jpg" href="{{ url_for('index') }}" class="logo">
           <h2>
-          <img src="/static/logo.jpg" href="{{ url_for('index') }}" style="height:75px; width:75px" >
-          <a href="{{ url_for('index') }}"><f style="color:white">WhaTNeat</f></a>
-          
+            WhaTNeat
           </h2>
+        </a>
+      <div class="header-right">
+        {% block headerRight %}
+        <div class="planify-bottom">
+          <a href="/planify">Plan</a>
         </div>
+        {% if 'user' in session %}
+        <div class="profile" tabindex="0">
+            <p>My profile</p>
+        </div>
+        <div class="profile-block">
+          <a href="/profil">My profile</a>
+          <a href="/choix">Modify my preferences</a>
+          <a href="/logout">Log out</a>
+        </div>
+        {% else %}
         <div class="log">
-          {% block head %}{% endblock %}
+        <a href="/login">Log in</a>
+        <a href="/register">Register</a>
         </div>
+        {% endif %}
+        {% endblock %}
       </div>
-    </header>
+    </div>
+  </header>
 
     <main>
       <section>
