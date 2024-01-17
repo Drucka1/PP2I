@@ -14,15 +14,14 @@
 {% block content %}
     <h2>Planify Your Meals</h2>
 
-    {% if error %}{{error}}{%endif%}
+    <h2>{% if error %}{{error}}{%endif%}</h2>
 
     <form method="post" action="{{ url_for('planify') }}">
         <label for="diet">Select diet:</label>
         <select id="diet" name="diet">
-        <!-- Options for diet -->
-        <option value="Vegetarian">Vegetarian</option>
-        <option value="Vegan">Vegan</option>
-        <!-- Add more options as needed -->
+            {%for categorie in categories %}
+                <option value="Vegetarian">{{categorie[0]}}</option>
+            {%endfor%}
         </select>
 
         <label for="max_budget">Maximum Budget:</label>
