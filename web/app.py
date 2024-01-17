@@ -42,7 +42,6 @@ def get_toutes_recettes(cursor):
     return recettes
 
 def get_full_recette(cursor):  
-    
     elt = list(cursor)[0]
     dict_tmp = {}
     dict_tmp['id'] = elt[0]
@@ -94,7 +93,6 @@ def get_recette_realisable_user():
                 
     return [recette['id'] for recette in recettes]
         
-
 def get_ustensiles():
     d = get_db().cursor()
     d.execute("SELECT nom FROM ustensiles")
@@ -658,4 +656,4 @@ def planify():
         
         return render_template('planify.html', diet=diet, max_budget=budget, recipe_plan=recipePlan,categories=d.fetchall())
     
-    return render_template("/planify.html",error="You need to log in to planify your meals")
+    return render_template("/login.html",error="You need to log in to planify your meals")
