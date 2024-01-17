@@ -207,14 +207,6 @@ def index():
         result = request.form.to_dict()
         c = get_db().cursor()
         c.execute("SELECT DISTINCT r.id,r.title,r.servings,r.servingsunit,r.imageURL FROM recipes as r JOIN category as rc ON r.id = rc.recipeid  JOIN categories as c ON rc.categoryid = c.id WHERE c.name LIKE '%"+str(result['nom_recette'])+"%' OR title LIKE '%"+str(result['nom_recette'])+"%'")        
-        
-        
-        
-        
-        
-        
-        
-        
         return render_template('index.html',search=str(result['nom_recette']),recettes=get_min_recettes(c))
     
     if request.method == "POST" and 'user' in session:
