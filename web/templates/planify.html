@@ -1,15 +1,6 @@
-<!-- app/templates/profile.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Profile{% endblock %}
-
-
-{% block head %}    
-    <a href="/index" class="link">Menu</a>
-    <a href="/logout" class="link">Log out</a>
-    <a href="/choix" class="link">Change your preference</a>
-{% endblock %}
 
 {% block content %}
     <h2>Planify Your Meals</h2>
@@ -19,9 +10,22 @@
     <form method="post" action="{{ url_for('planify') }}">
         <label for="diet">Select diet:</label>
         <select id="diet" name="diet">
+<<<<<<< HEAD
             {%for categorie in categories %}
                 <option value="Vegetarian">{{categorie[0]}}</option>
             {%endfor%}
+=======
+        <!-- Options for diet -->
+        <option value="Vegetarian">Vegetarian</option>
+        <option value="Vegan">Vegan</option>
+        <option value="Diabetic">Diabetic</option>
+        <option value="High fiber">High fiber</option>
+        <option value="Low cal">Low calories</option>
+        <option value="No fat">No fat</option>
+        <option value="Wheatless">Wheatless</option>
+
+        <!-- Add more options as needed -->
+>>>>>>> 58d468e94a298aec8ae0daabd95298b30047f6c2
         </select>
 
         <label for="max_budget">Maximum Budget:</label>

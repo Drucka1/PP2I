@@ -15,17 +15,29 @@
   
     <h2>RECIPE OF THE MOMENT</h2>
     <form action="/index" method="post">
+      <div class="searchBar">
         {% if search %}
-            <input type="text" name="nom_recette" value="{{search}}"/> <input type="submit" value="Search" />
+            <input type="text" name="nom_recette" value="{{search}}" placeholder="Search" class="search-field" />
+            <button type="submit" class="search-button">
+              <img src="{{ url_for('static', filename='glass.png') }}">
+            </button>
         {% else %}
-            <input type="text" name="nom_recette"/> <input type="submit" value="Search" />
+            <input type="text" name="nom_recette" class="search-field" />
+            <button type="submit" class="search-button">
+              <img src="{{ url_for('static', filename='glass.png') }}">
+            </button>
         {% endif %}
+      </div>
     </form>
 </div>
     <div class="recipes">
     {% if recettes%}
         {% for elt in recettes%}
             <div id="{{elt['id']}}" class="recipe"> 
+              <a href="recipe/{{elt['id']}}">
+                <div class="recipe-header"
+                <h2>{{elt['nom']|title}}</h2>
+              </a>
                 <form action="/index" method="post">
                     {% if search %}
                         <input type="text" name="nom_recette" value="{{search}}" hidden/>
@@ -33,12 +45,13 @@
                     <input type="name" name="change_fav" on hidden/>
                     <input type="text" name="id_recette" value="{{elt['id']}}" hidden/>
                     {% if 'user' in session and elt['id'] in session['favori']%}
-                        <input type="checkbox" name="fav" onclick="this.form.submit()" checked/><label>Favorite</label> 
+                        <input type="checkbox" name="fav" onclick="this.form.submit()" checked/>
                     {% else %}
-                        <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favorite</label> 
+                        <input type="checkbox" name="fav" onclick="this.form.submit()"/>
                     {% endif %}
                 </form>
-                <h2><a href="recipe/{{elt['id']}}">{{elt['nom']|title}}</h2>
+                </div>
+                <a href="recipe/{{elt['id']}}">
                 <img src="{{elt['image']}}" loading="lazy"></a>
                 
             </div>
