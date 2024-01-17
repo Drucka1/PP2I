@@ -2,21 +2,25 @@
 
 {% block title %}Log In{% endblock %}
 
-{% block head %}
-    <a href="/index" class="link">Menu</a>
-{% endblock %}
-
+{% block headerRight %}{% endblock %}
 
 {% block content %}
-    {% if error%}
-        <p><strong>{{error}}</strong></p>
-    {% endif%}
-
-    <form action="/login" method="post">
-        <div class="input"><label>Username : </label><input type="text" name="username" /></div>
-        <div class="input"><label>Password : </label><input type="password" name="password" /></div>
-        <input type="submit" value="Log in" />
-        
-    </form>
-    Don't have an account? <a href="/register" class="link2">Create one here</a>
+    <div class="login-container">
+        <h2>Log In</h2>
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
+        <form action="/login" method="post">
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <p>Don't have an account? <a href="/register" class="link">Create one here</a></p>
+            <button type="submit">Log in</button>
+        </form>
+    </div>
 {% endblock %}

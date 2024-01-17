@@ -3,51 +3,75 @@
 {% block title %}Your Choice{% endblock %}
 
 {% block head %}
-    <a href="/profil" class="link">Profil</a><br><br>   
+    <a href="/profil" class="link">Profile</a><br><br>   
     <a href="/index" class="link">Menu</a>
 {% endblock %}
 
-
 {% block content %}
-    <form action="/choix" method="post">
-        <div><label>Forname</label> : <input type="text" name="forname" value="{{ session['forname'] }}"/></div>
-        <div><label>Surname</label> : <input type="text" name="surname" value="{{ session['surname']}}"/></div>
-        <div><label>Phone number</label> : <input type="tel" name="tel" value="{{ session['tel'] }}"/></div>
-        <div><label>Maximum budget per month</label> : <input type="number" min="0" name="budget" value="{{ session['budget'] }}"/></div>
-        <div><label>Sexe : </label>
-        <select name="sexe" id="sexe">
-        {% if session['sexe'] == 'Homme' %}
-            <option value="Homme">Homme</option>
-            <option value=""></option>
-            <option value="Femme">Femme</option>
-        {% elif session['sexe'] == 'Femme' %}
-            <option value="Femme">Femme</option>
-            <option value="">
-            </option><option value="Homme">Homme</option>
-        {% else%}
-            <option value=""></option>
-            <option value="Homme">Homme</option>
-            <option value="Femme">Femme</option>
-        {%endif%}   
-        </select></div>
+    <div class="choice-container">
+        <form action="/choix" method="post">
+            <div class="input-group">
+                <label for="forname">Forname:</label>
+                <input type="text" name="forname" id="forname" value="{{ session['forname'] }}" />
+            </div>
+            <div class="input-group">
+                <label for="surname">Surname:</label>
+                <input type="text" name="surname" id="surname" value="{{ session['surname'] }}" />
+            </div>
+            <div class="input-group">
+                <label for="tel">Phone number:</label>
+                <input type="tel" name="tel" id="tel" value="{{ session['tel'] }}" />
+            </div>
+            <div class="input-group">
+                <label for="budget">Maximum budget per month:</label>
+                <input type="number" min="0" name="budget" id="budget" value="{{ session['budget'] }}" />
+            </div>
+            <div class="input-group">
+                <label for="sexe">Sexe:</label>
+                <select name="sexe" id="sexe">
+                    {% if session['sexe'] == 'Homme' %}
+                        <option value="Homme">Homme</option>
+                        <option value="Femme">Femme</option>
+                    {% elif session['sexe'] == 'Femme' %}
+                        <option value="Femme">Femme</option>
+                        <option value="Homme">Homme</option>
+                    {% else %}
+                        <option value="">Select</option>
+                        <option value="Homme">Homme</option>
+                        <option value="Femme">Femme</option>
+                    {% endif %}
+                </select>
+            </div>
     
-        <div>Any allergies ?</div>
-        {% for elt in allergenes %}
-            {% if elt in session['allergene'] %}
-                <input type="checkbox" name="{{elt}}" checked/><label>{{elt}}</label>
-            {% else %}
-                <input type="checkbox" name="{{elt}}"/><label>{{elt}}</label>
-            {%endif%}
-        {% endfor %}
+            <div class="item-group">
+              <div>
+              <p>Any allergies?</p>
+              </div>
+              <div class="item">
+                {% for elt in allergenes %}
+                    <div class="checkbox-group">
+                        <label>{{ elt }}</label>
+                        <input type="checkbox" name="{{ elt }}" {% if elt in session['allergene'] %}checked{% endif %} />
+                    </div>
+                {% endfor %}
+              </div>
+            </div>
 
-        <div>What utensils do you have ?</div>
-        {% for elt in ustensiles %}
-            {% if elt in session['ustensile'] %}
-                <div><input type="checkbox" name="{{elt}}" checked/><label>{{elt}}</label></div>
-            {% else %}
-                <div><input type="checkbox" name="{{elt}}"/><label>{{elt}}</label></div>
-            {%endif%}
-        {% endfor %}
-        <input type="submit" value="Valider" />
-    </form> 
+            <div class="item-group">
+              <div>
+              <p>What utensils do you have?</p>
+              </div>
+              <div class="item">
+                {% for elt in ustensiles %}
+                    <div class="checkbox-group">
+                        <label>{{ elt }}</label>
+                        <input type="checkbox" name="{{ elt }}" {% if elt in session['ustensile'] %}checked{% endif %} />
+                    </div>
+                {% endfor %}
+              </div>
+            </div>
+            
+            <input type="submit" value="Validate" />
+        </form>
+    </div>
 {% endblock %}

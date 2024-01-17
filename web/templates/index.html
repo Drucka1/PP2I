@@ -2,16 +2,6 @@
 
 {% block title %}Index{% endblock %}
 
-{% block head %}
-    {% if 'user' in session %}
-        <a href="/logout" class="link">Log out</a>
-        <a href="/profil" class="link">Your profile</a>
-    {% else %}
-        <a href="/login" class="link">Log in</a>
-        <a href="/register" class="link">Register</a>
-    {% endif %}
-{% endblock %}
-
 {% block content %}
     <p><strong>Hello
         {% if 'forname' in session %}
@@ -20,20 +10,22 @@
             {{session['user']|title}}
         {% endif%}
     </strong></p>
+
+    <div class="main-title">
   
-    RECIPE OF THE MOMENT
+    <h2>RECIPE OF THE MOMENT</h2>
     <form action="/index" method="post">
         {% if search %}
             <input type="text" name="nom_recette" value="{{search}}"/> <input type="submit" value="Search" />
         {% else %}
             <input type="text" name="nom_recette"/> <input type="submit" value="Search" />
         {% endif %}
-
     </form>
+</div>
+    <div class="recipes">
     {% if recettes%}
         {% for elt in recettes%}
-            <div id="{{elt['id']}}"> 
-                <br><br>
+            <div id="{{elt['id']}}" class="recipe"> 
                 <form action="/index" method="post">
                     {% if search %}
                         <input type="text" name="nom_recette" value="{{search}}" hidden/>
@@ -46,10 +38,11 @@
                         <input type="checkbox" name="fav" onclick="this.form.submit()"/><label>Favorite</label> 
                     {% endif %}
                 </form>
-                <br><h2><a href="recipe/{{elt['id']}}">{{elt['nom']|title}}</h2><br><br>
+                <h2><a href="recipe/{{elt['id']}}">{{elt['nom']|title}}</h2>
                 <img src="{{elt['image']}}" loading="lazy"></a>
-                <br><br>
+                
             </div>
         {% endfor %}
     {% endif %}
+    </div>
 {% endblock %}

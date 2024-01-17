@@ -1,35 +1,34 @@
-
 {% extends 'base.html' %}
 
 {% block title %}Register{% endblock %}
 
-{% block head %}    
-    <a href="/index" class="link">Menu</a>
-{% endblock %}
+{% block headerRight %}{% endblock %}
 
 {% block content %}
-    <h2>Register</h2>
-    {% if error%}
-        <p><strong>{{error}}</strong></p>
-        {% endif%}
-    <form action="/register" method="post">
-        <div class="input">
-            <label for="username">Username:</label>
-            <input type="text" name="username" required>
-        </div>
-        <div class="input">
-            <label for="email">Email:</label>
-            <input type="email" name="email" required>
-        </div>
-        <div class="input">
-            <label for="password">Password:</label>
-            <input type="password" name="password" required>
-        </div>
-        <div class="input">
-            <label for="confirmPassword">Confirm password:</label>
-            <input type="password" name="password_retype" required>
-        </div>
-        <p>Already have an account? <a href="/login" class="link2">Sign in here</a>.</p><br><br>
-        <button type="submit" value="Validate">Register</button>
-    </form>
+    <div class="register-container">
+        <h2>Register</h2>
+        {% if error %}
+            <p class="error-message"><strong>{{ error }}</strong></p>
+        {% endif %}
+        <form action="/register" method="post">
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="input-group">
+                <label for="confirmPassword">Confirm password:</label>
+                <input type="password" name="password_retype" id="confirmPassword" required>
+            </div>
+            <p>Already have an account? <a href="/login" class="link">Sign in here</a>.</p>
+            <button type="submit">Register</button>
+        </form>
+    </div>
 {% endblock %}
