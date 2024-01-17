@@ -100,17 +100,18 @@ header .container {
     align-items: center;
 }
 
-.planify-bottom {
-    background-color: var(--color2);
+.planify-buttom {
     margin-right: 20px;
+}
+
+.planify-buttom a {
+    background-color: var(--color2);
+
     border-radius: 50px;
+    padding: 8px 25px;
 }
 
-.planify-bottom a {
-    padding: 5px 10px;
-}
-
-.planify-bottom a:hover {
+.planify-buttom a:hover {
     background-color: #4E6151;
 }
 
@@ -171,6 +172,8 @@ main {
     grid-template-rows: masonry;
 }
 
+
+
 .searchBar {
   display: flex;
   align-items: center;
@@ -211,10 +214,28 @@ main {
   z-index: 1;
 }
 
+.recipe {
+  padding: 5px 5px;
+  margin: 0px 5px;
+  border-radius: 10px;
+
+  transition: all ease .3s;
+}
+
+.recipe img {
+  width: 100%;
+}
+
+.recipe:hover{
+  background-color: #edb254;
+
+}
+
 /* Login */
 .login-container,
 .register-container,
-.choice-container {
+.choice-container,
+.planify-container {
     max-width: 500px;
     margin: 50px auto;
     padding: 20px;
@@ -225,6 +246,10 @@ main {
 
 .choice-container {
   max-width: 700px;
+}
+
+.planify-container {
+  max-width: 800px;
 }
 
 .login-container h2,
@@ -276,6 +301,41 @@ main {
     margin-bottom: 10px;
 }
 
+
+.planify-form {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.error {
+    color: red;
+}
+
+.plan-details {
+    margin-top: 20px;
+}
+
+.plan-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.plan-details li {
+    margin-bottom: 10px;
+}
+
+.plan-details a {
+    text-decoration: none;
+    color: var(--color2);
+}
+
+.plan-details img {
+    max-width: 100px;
+    margin-left: 10px;
+}
 /* Style the footer section */
 footer {
     background-color: var(--color3);
