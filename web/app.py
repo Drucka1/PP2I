@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for,send_file
 from flask import g
 from random import sample,shuffle
-import sqlite3,hashlib,random,os
+import sqlite3,hashlib,random,os,re
 
 app = Flask(__name__)
 
@@ -78,7 +78,7 @@ def get_recette_realisable_user():
         return False
             
     c = get_db().cursor()
-    c.execute("SELECT * FROM recipes LIMIT 300")
+    c.execute("SELECT * FROM recipes")
     
     recettes = get_toutes_recettes(c)
     
@@ -130,7 +130,7 @@ def creation_menu(recettes,budget__max,nb_repas):
         return []
     return rec([],0,recette_melange)
 
-def knapsack(maxBudget, recipes, prices, favori):
+def knapsack(maxBudget, recipes, prices):
     memo = {}
     def currentPrice(recipes: list, prices: list):
         return sum([prices[i] if recipe else 0 for i, recipe in enumerate(recipes)])
@@ -202,6 +202,13 @@ def recipe(recipeId):
 
 @app.route('/index',methods=['POST','GET'])
 def index():    
+    
+    if request.method == "POST" and 'user' not in session and 'nom_recette' in request.form.to_dict():
+        result = request.form.to_dict()
+        c = get_db().cursor()
+        c.execute("SELECT DISTINCT r.id,r.title,r.servings,r.servingsunit,r.imageURL FROM recipes as r JOIN category as rc ON r.id = rc.recipeid  JOIN categories as c ON rc.categoryid = c.id WHERE c.name LIKE '%"+str(result['nom_recette'])+"%' OR title LIKE '%"+str(result['nom_recette'])+"%'")        
+        return render_template('index.html',search=str(result['nom_recette']),recettes=get_min_recettes(c))
+    
     if request.method == "POST" and 'user' in session:
         result = request.form.to_dict()
         if 'nom_recette' in result and 'change_fav' in result :
@@ -222,16 +229,15 @@ def index():
                 get_db().commit()
                 session['favori'].remove(int(result['id_recette']))
                 session.modified = True
-        
-            
+                    
             c = get_db().cursor()
-            c.execute("SELECT * FROM recipes WHERE title LIKE '%"+str(result['nom_recette'])+"%'")
+            c.execute("SELECT DISTINCT r.id,r.title,r.servings,r.servingsunit,r.imageURL FROM recipes as r JOIN category as rc ON r.id = rc.recipeid  JOIN categories as c ON rc.categoryid = c.id WHERE c.name LIKE '%"+str(result['nom_recette'])+"%' OR title LIKE '%"+str(result['nom_recette'])+"%'") 
             return render_template('index.html',search=str(result['nom_recette']),recettes=get_min_recettes(c))
         
         
         elif 'nom_recette' in result :
             c = get_db().cursor()
-            c.execute("SELECT * FROM recipes WHERE title LIKE '%"+str(result['nom_recette'])+"%'")
+            c.execute("SELECT DISTINCT r.id,r.title,r.servings,r.servingsunit,r.imageURL FROM recipes as r JOIN category as rc ON r.id = rc.recipeid  JOIN categories as c ON rc.categoryid = c.id WHERE c.name LIKE '%"+str(result['nom_recette'])+"%' OR title LIKE '%"+str(result['nom_recette'])+"%'") 
             return render_template('index.html',search=str(result['nom_recette']),recettes=get_min_recettes(c))
             
         elif 'change_fav' in result :
@@ -455,20 +461,18 @@ def choix():
     if request.method == "POST" and 'user' in session:
         result = request.form.to_dict()
         
-        l = ['forname','surname','sexe','tel'] 
+        l = ['forname','surname','sexe','tel','budget'] 
         
         insert,value= "",""
 
         for cle in l:
-            if result[cle] != '':
-                session[cle] = result[cle]
+            if result[cle].strip() != '':
+                if cle == 'tel' and (len(result[cle].strip())!=10 or re.match("[0-9]{10}",result[cle].strip())== None): 
+                    return render_template("choice.html",allergenes=get_allergenes(),ustensiles=get_ustensiles(),error="Your phone number is invalid")
+
+                session[cle] = result[cle].strip()
                 insert += cle+","
                 value += "'"+session[cle]+"',"
-
-        if result['budget'] != '':
-            session['budget'] = result['budget']
-            insert += 'budget,'
-            value += session['budget']+","
 
         c = get_db().cursor()  
 
@@ -531,7 +535,9 @@ def planify():
         recipeFound = cursor.fetchall()  
 
         if not recipeFound:
-            return render_template('not_found.html', message='Recipe not found')
+            d = get_db().cursor()
+            d.execute("SELECT DISTINCT(name) FROM categories")  
+            return render_template("/planify.html", error='Recipe not found',categories=d.fetchall())
 
         recipePlan = []
 
@@ -578,7 +584,7 @@ def planify():
         except Fav:
             pass   
          
-        recipes = knapsack(max_budget, recipes, recipePrice,session['favori'])
+        recipes = knapsack(max_budget, recipes, recipePrice)
 
         recipe_plan = []
         
@@ -593,9 +599,21 @@ def planify():
                 c.execute("INSERT INTO menu (id_user,id_recette) VALUES ("+str(session['id'])+","+str(recipePlan[i]['id'])+")")
                 get_db().commit()
             
-        return render_template('planify.html', diet=diet, max_budget=max_budget, recipe_plan=recipe_plan)
+        c = get_db().cursor()
+        c.execute("SELECT DISTINCT(name) FROM categories")    
+        
+        return render_template('planify.html', diet=diet, max_budget=max_budget, recipe_plan=recipe_plan,categories=c.fetchall())
 
     elif 'user' in session :
+    
+        c = get_db().cursor()
+        c.execute("SELECT * FROM menu WHERE id_user="+str(session['id']))
+        
+        if not c.fetchall():
+            d = get_db().cursor()
+            d.execute("SELECT DISTINCT(name) FROM categories")  
+            return render_template("/planify.html",categories=d.fetchall())
+    
         cursor = get_db().cursor()
         cursor.execute("SELECT r.title, r.imageURL, r.id FROM menu JOIN recipes as r ON r.id = menu.id_recette WHERE id_user="+str(session['id']))
 
@@ -635,6 +653,9 @@ def planify():
         c.execute("SELECT diet,budget FROM menu_details WHERE id_user="+str(session['id']))
         diet,budget = list(c)[0]
         
-        return render_template("/planify.html",diet=diet, max_budget=budget,recipe_plan=recipePlan)
-    else: 
-        return render_template("/planify.html",error="You need to log in to planify your meals")
+        d = get_db().cursor()
+        d.execute("SELECT DISTINCT(name) FROM categories")  
+        
+        return render_template('planify.html', diet=diet, max_budget=budget, recipe_plan=recipePlan,categories=d.fetchall())
+    
+    return render_template("/planify.html",error="You need to log in to planify your meals")

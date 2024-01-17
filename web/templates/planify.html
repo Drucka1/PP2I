@@ -6,6 +6,7 @@
     <div class="planify-container">
         <h2>Planify Your Meals</h2>
 
+<<<<<<< HEAD
         {% if error %}
             <p class="error">{{ error }}</p>
         {% endif %}
@@ -34,6 +35,48 @@
             <button type="submit">Generate Plan</button>
         </form>
 
+=======
+<<<<<<< HEAD
+    <h2>{% if error %}{{error}}{%endif%}</h2>
+
+    <form method="post" action="{{ url_for('planify') }}">
+        <label for="diet">Select diet:</label>
+        <select id="diet" name="diet">
+            {%for categorie in categories %}
+                <option value="{{categorie[0]}}">{{categorie[0]}}</option>
+            {%endfor%}
+        </select>
+=======
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('planify') }}" class="planify-form">
+            <div class="form-group">
+                <label for="diet">Select diet:</label>
+                <select id="diet" name="diet">
+                    <!-- Options for diet -->
+                    <option value="Vegetarian">Vegetarian</option>
+                    <option value="Vegan">Vegan</option>
+                    <option value="Diabetic">Diabetic</option>
+                    <option value="High fiber">High fiber</option>
+                    <option value="Low cal">Low calories</option>
+                    <option value="No fat">No fat</option>
+                    <option value="Wheatless">Wheatless</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="max_budget">Maximum Budget:</label>
+                <input type="number" id="max_budget" name="max_budget" value="{{ session['budget'] }}" min="0" required>
+            </div>
+>>>>>>> 9976d8b (some more css)
+
+            <button type="submit">Generate Plan</button>
+        </form>
+
+>>>>>>> 39db0dfa560db2ea6f45f6dd12f8b5dd7575a929
         {% if recipe_plan %}
             <div class="plan-details">
                 <p>Your Selected Diet: {{ diet }}</p>
