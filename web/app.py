@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for,send_file
 from flask import g
 from random import sample,shuffle
-import sqlite3,hashlib,random,os
+import sqlite3,hashlib,random,os,re
 
 app = Flask(__name__)
 
@@ -462,20 +462,18 @@ def choix():
     if request.method == "POST" and 'user' in session:
         result = request.form.to_dict()
         
-        l = ['forname','surname','sexe','tel'] 
+        l = ['forname','surname','sexe','tel','budget'] 
         
         insert,value= "",""
 
         for cle in l:
-            if result[cle] != '':
-                session[cle] = result[cle]
+            if result[cle].strip() != '':
+                if cle == 'tel' and (len(result[cle].strip())!=10 or re.match("[0-9]{10}",result[cle].strip())== None): 
+                    return render_template("choice.html",allergenes=get_allergenes(),ustensiles=get_ustensiles(),error="Your phone number is invalid")
+
+                session[cle] = result[cle].strip()
                 insert += cle+","
                 value += "'"+session[cle]+"',"
-
-        if result['budget'] != '':
-            session['budget'] = result['budget']
-            insert += 'budget,'
-            value += session['budget']+","
 
         c = get_db().cursor()  
 
