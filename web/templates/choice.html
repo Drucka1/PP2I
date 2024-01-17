@@ -43,11 +43,11 @@
                 </select>
             </div>
     
-            <div class="input-group">
+            <div class="item-group">
               <div>
               <p>Any allergies?</p>
               </div>
-              <div>
+              <div class="item">
                 {% for elt in allergenes %}
                     <div class="checkbox-group">
                         <label>{{ elt }}</label>
@@ -57,14 +57,18 @@
               </div>
             </div>
 
-            <div class="input-group">
+            <div class="item-group">
+              <div>
               <p>What utensils do you have?</p>
+              </div>
+              <div class="item">
                 {% for elt in ustensiles %}
                     <div class="checkbox-group">
                         <label>{{ elt }}</label>
                         <input type="checkbox" name="{{ elt }}" {% if elt in session['ustensile'] %}checked{% endif %} />
                     </div>
                 {% endfor %}
+              </div>
             </div>
             
             <input type="submit" value="Validate" />

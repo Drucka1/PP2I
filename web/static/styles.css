@@ -155,6 +155,10 @@ main {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.choice-container {
+  max-width: 700px;
+}
+
 .login-container h2,
 .register-container h2 {
     text-align: center;
@@ -165,13 +169,19 @@ main {
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
-
 }
 
-.choice-container .input-group {
-  display: flex;
-  flex-wrap: wrap;
+.item-group {
+  margin-bottom: 20px;
 }
+
+.item {
+    display: grid;
+    justify-content: center;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, 80px);
+}
+
 
 label {
     display: block;
@@ -188,9 +198,10 @@ select {
 }
 
 .checkbox-group {
-    display: grid;
-    justify-content: center;
-    gap: 20px;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px 10px;
 }
 
 .checkbox-group input {
