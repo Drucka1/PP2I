@@ -1,15 +1,6 @@
-<!-- app/templates/profile.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Profile{% endblock %}
-
-
-{% block head %}    
-    <a href="/index" class="link">Menu</a>
-    <a href="/logout" class="link">Log out</a>
-    <a href="/choix" class="link">Change your preference</a>
-{% endblock %}
 
 {% block content %}
     <h2>Planify Your Meals</h2>
@@ -22,6 +13,12 @@
         <!-- Options for diet -->
         <option value="Vegetarian">Vegetarian</option>
         <option value="Vegan">Vegan</option>
+        <option value="Diabetic">Diabetic</option>
+        <option value="High fiber">High fiber</option>
+        <option value="Low cal">Low calories</option>
+        <option value="No fat">No fat</option>
+        <option value="Wheatless">Wheatless</option>
+
         <!-- Add more options as needed -->
         </select>
 
