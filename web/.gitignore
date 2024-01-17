@@ -3,3 +3,4 @@ test.db
 env/
 __pycache__/
 /A_FAIRE.txt
+database.db
